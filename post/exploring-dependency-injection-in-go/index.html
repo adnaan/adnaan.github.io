@@ -48,7 +48,7 @@
 
 <p>It plainly means that the dependencies of an object are passed to it as it’s initial state. This is in contrast with using globals as dependencies wherein the same global resource is shared across multiple objects. It also means the object doesn&rsquo;t self-initialize its dependencies.</p>
 
-<pre><code>// Using a global dependency in PostService
+<pre><code class="language-go">// Using a global dependency in PostService
 
 var userService user.Service
 
@@ -66,7 +66,7 @@ func GetComments() []Comment {
 
 <p>Instead <code>PostService</code> could explicitly depend on the <code>user.Service</code> resource. While initializing the <code>PostService</code> object, we would be <code>injecting</code> it&rsquo;s dependencies.</p>
 
-<pre><code>// Using dependency injection
+<pre><code class="language-go">// Using dependency injection
 
 type PostService struct {
   UserService user.Service
@@ -82,12 +82,11 @@ func main(){
   postService := &amp;PostService{UserService:user.NewService()
   ...
 }
-
 </code></pre>
 
 <h2 id="designing-for-dependency-injection">Designing for Dependency Injection</h2>
 
-<h3 id="goals">Goals:</h3>
+<h3 id="goals">Goals</h3>
 
 <ol>
 <li>No Global State: No package level variables, no package level func init. Refer: <a href="https://peter.bourgon.org/blog/2017/06/09/theory-of-modern-go.html">theory of modern go</a></li>
@@ -99,7 +98,7 @@ func main(){
 
 <p>First, let&rsquo;s look at a more involved example :</p>
 
-<pre><code>
+<pre><code class="language-go">
 func main(){
   asClient := aerospike.NewClient(...)
   kafkaProducer := sarama.NewAsyncProducer(...)
@@ -129,7 +128,6 @@ func main(){
   }
 
 }
-
 </code></pre>
 
 <p>Though the concept of DI itself is simple, it takes a bit of premeditated design to avoid a convoluted injection code. In the above example, where <code>user.Service</code> has multiple modes, the struct <code>user.Service{...}</code> initialization does not make clear what dependents where required to make that happen. One can imagine this initialization pattern to get even more messy with changing requirements. Service usability and behavior could change based on:</p>
@@ -146,11 +144,10 @@ func main(){
 
 <p>To support multi-mode services(with a general <code>default</code> mode), declaring interfaces is the way to go. Declaring interfaces allows us to have multiple implementations of the same service. When used as a dependency, clients don&rsquo;t need to change the contract when a different mode of the service is passed.This is also regularly useful for testing .</p>
 
-<pre><code>type AppHandler struct {
+<pre><code class="language-go">type AppHandler struct {
   UserService user.Service
   // ... more services.
 }
-
 </code></pre>
 
 <p>Here, <code>AppHandler</code> will accept any service(mode) which satisfies the <code>user.Service</code> interface. We will see how it&rsquo;s done, further ahead.</p>
@@ -168,7 +165,7 @@ func main(){
 
 <p>The above ideas have been sourced from the excellent post by Dave Cheney. Would highly recommend a nice, slow read: <a href="https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis.">https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis.</a> Actually I will be right here, while you do that. The <code>functional options</code> pattern is reasonable enough. But still doesn&rsquo;t scale if you have a large number of dependencies and multiple modes. Consider the following:</p>
 
-<pre><code>// using the functional option pattern
+<pre><code class="language-go">// using the functional option pattern
 myUserService := user.NewService(
   msession *mgo.Session,
   ..., // more default dependencies
@@ -183,8 +180,6 @@ myUserService := user.NewService(
   user.PrivilegedMode(redisPool),
   ..., // more modes
   )
-
-
 </code></pre>
 
 <p>We end up with a situation where again, there are many arguments passed into the <code>New</code> function. Also it doesn&rsquo;t make a lot of sense to have to declare <code>default</code> behavior as a mode. Ideally, for a service we would want a <code>default</code> behavior which we can override to create a new mode.</p>
@@ -193,19 +188,18 @@ myUserService := user.NewService(
 
 <p>So, instead we use a combo of <code>functional options</code> and <code>Config</code> patterns to get around this complexity.</p>
 
-<pre><code>// NewService configures the service
+<pre><code class="language-go">// NewService configures the service
 func NewService(defaultConfig Config, configOptions ...func(*Config)) Service {
   for _, option := range configOptions {
     option(&amp;defaultConfig)
   }
   return &amp;service{c: &amp;defaultConfig}
 }
-
 </code></pre>
 
 <p>Note that we didn&rsquo;t pass <code>*Config</code> as <code>defaultConfig</code> as we wouldn&rsquo;t want the caller to hold the reference to it. Additional attributes/overrides to the <code>defaultConfig</code> is done via <code>configOptions</code>. The following snippets of code condenses the ideas we have talked about:</p>
 
-<pre><code>// user/user.go
+<pre><code class="language-go">// user/user.go
 package user
 
 import (
@@ -269,11 +263,9 @@ func getAccessKey(conn redis.Conn, uid string) (string, error) {
   //fetch accesskey
   return &quot;xyz123&quot;, nil
 }
-
-
 </code></pre>
 
-<pre><code>//main.go
+<pre><code class="language-go">//main.go
 package main
 
 import (
@@ -302,14 +294,13 @@ func main() {
   // register appHandler to the http server.
 
 }
-
 </code></pre>
 
 <h2 id="testing-mocking">Testing/Mocking</h2>
 
 <p>Easier testing/mocking is a benefit which just falls out of implementing the dependency injection pattern. Since we already have a <code>Service</code> interface, writing a mock implementation is a no-brainer. Our test code would now look something like this.</p>
 
-<pre><code>//user/mock/user.go
+<pre><code class="language-go">//user/mock/user.go
 package mock
 
 import &quot;github.com/adnaan/talks/dependency_injection_july2017/user&quot;
@@ -327,10 +318,9 @@ func NewService(defaultConfig user.Config, configOptions ...func(*user.Config)) 
 return &amp;service{c: &amp;defaultConfig}
 }
 ...
-
 </code></pre>
 
-<pre><code>// main_test.go
+<pre><code class="language-go">// main_test.go
 
 package main
 
@@ -345,31 +335,28 @@ func TestService(t *testing.T) {
   mockService := mock.NewService(mockConfig)
 }
 ...
-
 </code></pre>
 
 <h2 id="refactoring-code">Refactoring Code</h2>
 
 <p>A sorted out dependency graph makes splitting our code into new services trivial.</p>
 
-<pre><code>//service1/main.go
+<pre><code class="language-go">//service1/main.go
 msession := &amp;mgo.Session{} //dummy
 defaultConfig := user.Config{Msession: msession}
 redisPool := &amp;redis.Pool{} //dummy
 myUserService := user.NewService(defaultConfig)
 appHandler := &amp;AppHandler{UserService: myUserService}
 ...
-
 </code></pre>
 
-<pre><code>//service2/main.go
+<pre><code class="language-go">//service2/main.go
 msession := &amp;mgo.Session{} //dummy
 defaultConfig := user.Config{Msession: msession}
 redisPool := &amp;redis.Pool{} //dummy
 myPrivilegedUserService := user.NewService(defaultConfig, user.PrivilegedMode(redisPool))
 appHandler := &amp;AppHandler{UserService: myPrivilegedUserService}
 ...
-
 </code></pre>
 
 <h2 id="dependency-graph-builders">Dependency Graph Builders</h2>
@@ -380,12 +367,11 @@ appHandler := &amp;AppHandler{UserService: myPrivilegedUserService}
 
 <p>Here is a tl;dr for the reader:</p>
 
-<pre><code>Pass dependencies to a service implementation as functional config options:
+<pre><code class="language-go">Pass dependencies to a service implementation as functional config options:
 
      New(defaultConfig Config, configOptions ...func(*Config))Service.
 
 where Service is an interface.
-
 </code></pre>
 
 <p>Dependency Injection in other languages consider more factors specific to the ecosystem. It&rsquo;s important to evaluate which of the patterns emanating from those factors are applicable in Go. Hopefully I have presented a strong case for a sensible dependency injection pattern in Go.</p>

@@ -51,7 +51,6 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
   w.WriteHeader(http.StatusOK)
   w.Write([]byte(&quot;OK&quot;))
 }
-
 </code></pre>
 
 <p>But this gets cumbersome if you have more than a couple of handlers and would want to track other metrics too.</p>
@@ -60,8 +59,7 @@ func handleHome(w http.ResponseWriter, r *http.Request) {
 
 <p>Usage:</p>
 
-<pre><code class="language-go">
-r := chi.NewRouter()
+<pre><code class="language-go">r := chi.NewRouter()
 statsdClient, _ := statsd.New(
   statsd.Prefix(&quot;myapp&quot;),
   statsd.Address(&quot;localhost:8125&quot;),
@@ -73,14 +71,12 @@ handleHome := func(w http.ResponseWriter, r *http.Request) {
   w.Write([]byte(&quot;OK&quot;))
 }
 r.Get(wrap.HandlerFunc(&quot;home&quot;, &quot;/&quot;, handleHome))
-
 </code></pre>
 
 <p>By default the wrapper sends the following metrics for http: <code>response_time</code>,
 <code>count</code> and <code>status.count</code> Since the code is trivial I would recommend folks to copy it and modify to suit their own purposes. Here&rsquo;s the single file which constitutes the package:</p>
 
-<pre><code class="language-go">
-// Package statsdwrap exposes wrappers for http.Handler and http.HandlerFunc which send
+<pre><code class="language-go">// Package statsdwrap exposes wrappers for http.Handler and http.HandlerFunc which send
 // metrics to statsd.
 // Usage:
 // r := chi.NewRouter()

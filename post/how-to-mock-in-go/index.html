@@ -44,18 +44,16 @@
 
 <p>So if you have a type <code>User</code>.</p>
 
-<pre><code>...
+<pre><code class="language-go">...
 type User struct {
     ID string
     Name string
 }
-
-
 </code></pre>
 
 <p>and a type <code>Storage</code> which represents a database.</p>
 
-<pre><code>...
+<pre><code class="language-go">...
 type Storage struct {
     db *sql.DB
 }
@@ -66,8 +64,6 @@ func (s *Storage) CreateUser(user User) error {
     ...
     return nil
 }
-
-
 </code></pre>
 
 <p>In the above psuedo-code there are two ways to mock the behaviour of <code>Storage</code> without using a real db connection. The first way is to mock the <code>db</code> object itself. Driver-level mocking is not trivial but it&rsquo;s possible to find packages out there: <a href="https://github.com/DATA-DOG/go-sqlmock">DATA-DOG/go-sqlmock</a>. We won&rsquo;t talk about it in this post. The second way is to mock the <code>CreateUser</code> method. Let&rsquo;s see the approaches to mock out the methods.</p>
@@ -78,7 +74,7 @@ func (s *Storage) CreateUser(user User) error {
 
 <p>To mock out the <code>Storage</code> type, we can declare an interface to have a real and a mock implementation. So instead of creating a <code>type Storage struct</code>, we create a <code>type Storage interface</code>.</p>
 
-<pre><code>...
+<pre><code class="language-go">...
 type Storage interface {
     CreateUser(user User) error
 }
@@ -88,7 +84,7 @@ type Storage interface {
 
 <p>Implement a real storage for the interface <code>Storage</code>.</p>
 
-<pre><code>...
+<pre><code class="language-go">...
 func NewStorage(db *sql.DB) Storage {
     return &amp;defaultStorage{db : db}
 }
@@ -103,13 +99,11 @@ func (d *defaultStorage) CreateUser(user User) error {
     ...
     return nil
 }
-
-
 </code></pre>
 
 <p>and a mock storage.</p>
 
-<pre><code>...
+<pre><code class="language-go">...
 func NewMockStorage() Storage {
     return &amp;mockStorage{users: make(map[int64]User)}
 }
@@ -125,13 +119,11 @@ func (m *mockStorage) CreateUser(user User) error {
     ...
     return nil
 }
-
-
 </code></pre>
 
 <p>Alternatively, one could split this into multiple packages to keep the imports more sensible.</p>
 
-<pre><code>
+<pre><code class="language-go">
 
 pkg/storage/
     mocksql/
@@ -143,7 +135,7 @@ pkg/storage/
 
 <p><code>sql.go</code></p>
 
-<pre><code>...
+<pre><code class="language-go">...
 func New(db *sql.DB) Storage {
     return &amp;storage{db: db}
 }
@@ -158,13 +150,11 @@ func (s *storage) CreateUser(user User) error {
     ...
     return nil
 }
-
-
 </code></pre>
 
 <p><code>mocksql/sql.go</code></p>
 
-<pre><code>...
+<pre><code class="language-go">...
 func New() Storage {
     return &amp;mockStorage{users: make(map[int64]User)}
 }
@@ -180,13 +170,11 @@ func (m *mockStorage) CreateUser(user User) error {
     ...
     return nil
 }
-
-
 </code></pre>
 
 <p><code>storage.go</code></p>
 
-<pre><code>...
+<pre><code class="language-go">...
 type Storage interface {
     CreateUser(user User) error
 }
@@ -198,41 +186,35 @@ func NewSQL(db *sql.DB) Storage {
 func NewMockSQL() Storage {
     return mocksql.New()
 }
-
-
 </code></pre>
 
 <p>To import. <code>user.go</code></p>
 
-<pre><code>import &quot;github.com/myuser/mypkg/pkg/storage&quot;
+<pre><code class="language-go">import &quot;github.com/myuser/mypkg/pkg/storage&quot;
 
 ...
 
 storage := storage.NewSQL(db)
-
-
 </code></pre>
 
 <p><code>user_test.go</code></p>
 
-<pre><code>import &quot;github.com/myuser/mypkg/pkg/storage&quot;
+<pre><code class="language-go">import &quot;github.com/myuser/mypkg/pkg/storage&quot;
 
 ...
 
 storage := storage.NewMockSQL()
-
-
 </code></pre>
 
 <p>One could imagine that if the <code>Storage</code> interface has tens of methods or there are several interfaces like it, it could get quite cumbersome to write out the mock implementations for it. Fortunately there&rsquo;s tooling to help out.</p>
 
 <h4 id="generating-mocks">Generating Mocks</h4>
 
-<h5 id="1-use-an-editor-plugin">1. Use an editor plugin</h5>
+<h5 id="a-use-an-editor-plugin">a. Use an editor plugin</h5>
 
 <p>In <code>vscode</code> open the command paletter(cmd+shift+p), move cursor on the target stub and run <code>Go: Generate Interface Stubs</code>. Most of the editors supporting Go have this feature integrated.</p>
 
-<h5 id="2-use-a-cli-or-package">2. Use a cli or package</h5>
+<h5 id="b-use-a-cli-or-package">b. Use a cli or package</h5>
 
 <p><a href="https://godoc.org/github.com/stretchr/testify/mock">testify/mock</a> <a href="https://godoc.org/github.com/golang/mock">golang/mock</a></p>
 
@@ -244,7 +226,7 @@ storage := storage.NewMockSQL()
 
 <p>This approach is based on making <code>CreateUser</code> as a field of the struct instead of a method on the struct. Go treats functions as a first class citizen. <code>store.go</code></p>
 
-<pre><code>...
+<pre><code class="language-go">...
 import &quot;github.com/adnaan/mypkg/sqldb&quot;
 
 type Storage struct {
@@ -263,13 +245,11 @@ storage := Storage {
 }
 
 storage.CreateUser(user)
-
-
 </code></pre>
 
 <p><code>store_test.go</code></p>
 
-<pre><code>...
+<pre><code class="language-go">...
 
 var lastID = 0
 var users = make(map[int64]User)
@@ -284,15 +264,13 @@ mockStorage := Storage {
 }
 
 mockStorage.CreateUser(user)
-
-
 </code></pre>
 
 <h4 id="b-mocked-struct-with-custom-function-types">b. Mocked struct with custom function types</h4>
 
 <p>In this approach one still has a <code>Storage</code> interface but also implements a mock struct which holds mocked equivalents of the interface methods. <code>store.go</code></p>
 
-<pre><code>...
+<pre><code class="language-go">...
 type Storage interface {
     CreateUser(user User) error
 }
@@ -311,13 +289,11 @@ func (s *storage) CreateUser(user User) error {
     ...
     return nil
 }
-
-
 </code></pre>
 
 <p><code>store_test.go</code></p>
 
-<pre><code>...
+<pre><code class="language-go">...
 
 type StorageMock struct {
     CreateUserFunc func(user User) error
@@ -343,8 +319,6 @@ mockStorage := &amp;StorageMock{
 }
 
 err := mockStorage.CreateUser(user)
-
-
 </code></pre>
 
 <p>There is tooling available to generate <code>StorageMock</code> via <a href="https://github.com/matryer/moq">moq</a></p>
@@ -353,7 +327,7 @@ err := mockStorage.CreateUser(user)
 
 <p>We might want to partially mock a type. The technique of embedding types allows us to mock out only the methods we want to. <code>store.go</code></p>
 
-<pre><code>...
+<pre><code class="language-go">...
 type Storage interface {
     CreateUser(user User) error
     ExistsUser(userID int64) bool
@@ -380,16 +354,14 @@ func (s *storage) ExistsUser(userID int64) bool {
     ...
     return false
 }
-
-
 </code></pre>
 
 <p><code>store_test.go</code></p>
 
-<pre><code>...
+<pre><code class="language-go">...
 
 type storageMock struct {
-    storage // embed type storage which implements the Storage 
+    storage // embed type storage which implements the Storage
             //interface
     users map[int64]User
     lastID int64
@@ -401,7 +373,6 @@ func (s *storageMock) CreateUser(user User) error {
         ...
         return nil
 }
-
 ...
 
 mockStorage := &amp;storageMock{}
@@ -409,11 +380,9 @@ mockStorage := &amp;storageMock{}
 err := mockStorage.CreateUser(user)
 // calls the original ExistsUser Method
 err = mockStorage.ExistsUser(111)
-
-
 </code></pre>
 
-<h1 id="conclusion">Conclusion</h1>
+<h2 id="conclusion">Conclusion</h2>
 
 <p>Depending on a project&rsquo;s complexity, scope and use cases either one of the above mocking approaches could fit. One of the considerations could be other behaviours(apart from mocking) needed for a type. For e.g. the <code>Storage</code> type could have multiple database backends implementations like <code>inmem, postgres, mysql etc.</code> Mock packages in <a href="https://golanglibs.com/search?q=mock">golanglibs.com</a>. Feedback is welcome on <a href="https://twitter.com/adnaanx">Twitter</a> too. Mock well and prosper 🖖</p>
 

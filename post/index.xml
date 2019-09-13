@@ -31,5 +31,15 @@ Example So if you have a type User.</description>
 func main(){ r := chi.NewRouter() r.Get(&amp;quot;/&amp;quot;,handleHome) } func handleHome(w http.ResponseWriter, r *http.Request) { defer c.NewTiming().Send(&amp;quot;homepage.response_time&amp;quot;) defer c.Increment(&amp;quot;foo.counter&amp;quot;) time.Sleep(time.Millisecond * 1000) w.WriteHeader(http.StatusOK) w.Write([]byte(&amp;quot;OK&amp;quot;)) }  But this gets cumbersome if you have more than a couple of handlers and would want to track other metrics too.</description>
     </item>
     
+    <item>
+      <title>Exploring Dependency Injection in Go</title>
+      <link>/post/exploring-dependency-injection-in-go/</link>
+      <pubDate>Sat, 15 Jul 2017 03:42:44 +0000</pubDate>
+      
+      <guid>/post/exploring-dependency-injection-in-go/</guid>
+      <description>Introduction There is a lot of material available about the pros and cons of Dependency Injection. This post is less about the pattern itself and more about its implementation design and it&amp;rsquo;s side-effects w.r.t Go. Let&amp;rsquo;s setup a context for Go users : As a clean programming practice, the theory of dependency injection is quite simple across several languages:
+ A dependency is passed to an object as an argument rather than the object creating or finding it.</description>
+    </item>
+    
   </channel>
 </rss>

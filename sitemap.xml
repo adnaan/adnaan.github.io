@@ -3,12 +3,12 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://adnaan.badr.in/post/how-to-mock-in-go/</loc>
+    <loc>https://adnaan.badr.in/blog/</loc>
     <lastmod>2019-01-10T20:06:52+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://adnaan.badr.in/post/</loc>
+    <loc>https://adnaan.badr.in/2019/01/10/how-to-mock-in-go/</loc>
     <lastmod>2019-01-10T20:06:52+00:00</lastmod>
   </url>
   
@@ -18,12 +18,12 @@
   </url>
   
   <url>
-    <loc>https://adnaan.badr.in/post/a-statsd-http-handler-wrapper/</loc>
+    <loc>https://adnaan.badr.in/2017/07/20/a-statsd-http-handler-wrapper/</loc>
     <lastmod>2017-07-20T16:46:28+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://adnaan.badr.in/post/exploring-dependency-injection-in-go/</loc>
+    <loc>https://adnaan.badr.in/2017/07/15/exploring-dependency-injection-in-go/</loc>
     <lastmod>2017-07-15T03:42:44+00:00</lastmod>
   </url>
   

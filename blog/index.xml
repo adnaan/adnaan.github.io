@@ -6,10 +6,22 @@
     <description>Recent content in Blogs on Time Traveling Gopher</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 20 Oct 2019 18:16:30 +0200</lastBuildDate>
+    <lastBuildDate>Mon, 21 Oct 2019 09:59:25 +0200</lastBuildDate>
     
 	<atom:link href="https://adnaan.badr.in/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Go Pattern: Supervise Multiple Servers</title>
+      <link>https://adnaan.badr.in/blog/2019/10/21/go-pattern-supervise-multiple-servers/</link>
+      <pubDate>Mon, 21 Oct 2019 09:59:25 +0200</pubDate>
+      
+      <guid>https://adnaan.badr.in/blog/2019/10/21/go-pattern-supervise-multiple-servers/</guid>
+      <description>This post describes a simple pattern to supervise multiple http/grpc/tcp servers in a go program.
+Packages Used: context, errgroup, os, os/signal
+After receiving a termination signal, we wait on multiple servers to shut them down gracefully. This is done using the errgroup package.
+$ go run main.go 2019/10/21 11:55:59 server 2 listening on port 8081 2019/10/21 11:55:59 server 1 listening on port 8080 ^C2019/10/21 11:56:10 shutting down servers, please wait... 2019/10/21 11:56:14 a graceful bye  To see the delay in shutdown in action, we can mimic a alive open connection by sending a request from the browser i.</description>
+    </item>
     
     <item>
       <title>What is Devops ?</title>

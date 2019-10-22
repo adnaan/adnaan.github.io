@@ -19,8 +19,8 @@
       <guid>https://adnaan.badr.in/blog/2019/10/22/nifty-go-pkg-ory/dockertest/</guid>
       <description>A package I often use and find extremely useful for intergation testing is dockertest
 Use Case You want to setup and tear down a real database for each integration test run.
-An example from the dockertest repository
-var db *redis.Client var err error pool, err = dockertest.NewPool(&amp;quot;&amp;quot;) if err != nil { log.Fatalf(&amp;quot;Could not connect to docker: %s&amp;quot;, err) } resource, err := pool.Run(&amp;quot;redis&amp;quot;, &amp;quot;3.2&amp;quot;, nil) if err != nil { log.</description>
+Example An example from the dockertest repository
+var db *redis.Client var err error pool, err = dockertest.NewPool(&amp;quot;&amp;quot;) if err != nil { log.Fatalf(&amp;quot;Could not connect to docker: %s&amp;quot;, err) } resource, err := pool.Run(&amp;quot;redis&amp;quot;, &amp;quot;3.2&amp;quot;, nil) if err !</description>
     </item>
     
     <item>

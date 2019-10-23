@@ -4,16 +4,21 @@
   
   <url>
     <loc>https://adnaan.badr.in/blog/</loc>
-    <lastmod>2019-10-22T08:31:33+02:00</lastmod>
+    <lastmod>2019-10-23T16:33:01+02:00</lastmod>
   </url>
   
   <url>
-    <loc>https://adnaan.badr.in/blog/2019/10/22/nifty-go-pkg-ory/dockertest/</loc>
-    <lastmod>2019-10-22T08:31:33+02:00</lastmod>
+    <loc>https://adnaan.badr.in/blog/2019/10/23/go-pattern-test-rig-func/</loc>
+    <lastmod>2019-10-23T16:33:01+02:00</lastmod>
   </url>
   
   <url>
     <loc>https://adnaan.badr.in/</loc>
+    <lastmod>2019-10-23T16:33:01+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://adnaan.badr.in/blog/2019/10/22/nifty-go-pkg-ory/dockertest/</loc>
     <lastmod>2019-10-22T08:31:33+02:00</lastmod>
   </url>
   

@@ -6,10 +6,21 @@
     <description>Recent content in Blogs on Time Traveling Gopher</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 22 Oct 2019 08:31:33 +0200</lastBuildDate>
+    <lastBuildDate>Wed, 23 Oct 2019 16:33:01 +0200</lastBuildDate>
     
 	<atom:link href="https://adnaan.badr.in/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Go Pattern: Test Rig Func</title>
+      <link>https://adnaan.badr.in/blog/2019/10/23/go-pattern-test-rig-func/</link>
+      <pubDate>Wed, 23 Oct 2019 16:33:01 +0200</pubDate>
+      
+      <guid>https://adnaan.badr.in/blog/2019/10/23/go-pattern-test-rig-func/</guid>
+      <description>Often we need per-test setup and teardown. This is especially useful for third party integration testing, for e.g. testing against a database.
+It looks fairly simple. Extending the example from a previous post: Nifty Go Pkg: ory/dockertest
+func redisRig(t *testing.T, fn func(rdb *redis.Client)) { var err error pool, err := dockertest.NewPool(&amp;quot;&amp;quot;) assert.Nil(t, err) resource, err := pool.Run(&amp;quot;redis&amp;quot;, &amp;quot;5.0.6&amp;quot;, nil) assert.Nil(t, err) var rdb *redis.Client err = pool.Retry(func() error { rdb = newRedisClient(resource.</description>
+    </item>
     
     <item>
       <title>Nifty Go Pkg: ory/dockertest</title>

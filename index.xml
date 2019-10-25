@@ -6,10 +6,23 @@
     <description>Recent content on Time Traveling Gopher</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 23 Oct 2019 16:33:01 +0200</lastBuildDate>
+    <lastBuildDate>Fri, 25 Oct 2019 07:31:21 +0200</lastBuildDate>
     
 	<atom:link href="https://adnaan.badr.in/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Ops: My K8s Cli Toolset</title>
+      <link>https://adnaan.badr.in/blog/2019/10/25/ops-my-k8s-cli-toolset/</link>
+      <pubDate>Fri, 25 Oct 2019 07:31:21 +0200</pubDate>
+      
+      <guid>https://adnaan.badr.in/blog/2019/10/25/ops-my-k8s-cli-toolset/</guid>
+      <description>In the last couple of months, the command line tools I have been using to interact with kubernetes hasn&amp;rsquo;t seen any additions. It&amp;rsquo;s a good time to write it down.
+ kube-ps1: Sets the current k8s ctx as info line to your prompt.
+ kubectx, kubens + fzf: Switch quickly between contexts and namespaces.
+ k9s: Control Panel for your k8s collector
+ kail: See aggregated logs from the cluster based on pattern matched filters.</description>
+    </item>
     
     <item>
       <title>Go Pattern: Test Rig Func</title>

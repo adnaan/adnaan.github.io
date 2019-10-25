@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Hugo 0.58.2" />
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="Adnaan Badr">
+  <meta property="og:url" content="https://adnaan.badr.in/blog/2019/10/25/go-pattern-is-zero-value-a-change/">
+
+  <title>Go Pattern: Is Zero Value a Change ? - Time Traveling Gopher</title>
+  <meta property="og:title" content="Go Pattern: Is Zero Value a Change ? - Time Traveling Gopher">
+  <meta property="og:type" content="article">
+  <meta name="description" content="">
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Arvo:400,700">
+  <link rel="stylesheet" href="/css/highlight.css">
+  <link rel="stylesheet" href="/css/journal.css">
+  <link href="/index.xml" rel="alternate" type="application/rss+xml" title="Time Traveling Gopher">
+
+</head>
+
+<body>
+  <div class="container">
+
+    <nav class="site-nav">
+      <a href="https://adnaan.badr.in">Index</a>
+    </nav>
+
+
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">Go Pattern: Is Zero Value a Change ?</h1>
+      <time class="post-date" datetime="2019-10-25 13:18:27 CEST">25 Oct 2019</time>
+    </header>
+
+    <p>As we know in Go, variables declared without an explicit initial value are assigned their zero value.</p>
+
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+type data struct {
+	a string
+}
+
+func main() {
+	var d data
+	fmt.Printf(&quot;%+v&quot;,d)
+}
+// go run main.go
+// output: {a:}
+
+</code></pre>
+
+<p>Here <code>a</code> is an empty string. This is ok. Sane defaults.</p>
+
+<p>The problem arises when we want to check if a field&rsquo;s value has changed to it&rsquo;s <code>zero</code> value. The solution to this problem is pretty simple.</p>
+
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+type data struct {
+	a *string
+}
+
+func main() {
+	var d data
+	fmt.Printf(&quot;%+v&quot;,d)
+}
+// go run main.go
+// output: {a:&lt;nil&gt;}
+</code></pre>
+
+<p>Making the field a pointer to string helps. To keep a field unchanged we simply don&rsquo;t assign to it. As in the above example, it will be set to zero value of pointer which is nil.</p>
+
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+type data struct {
+	a *string
+}
+
+func main() {
+	var val string
+	d := data{a: &amp;val}
+	if d.a == nil {
+		// nothing changed
+		return
+	}
+
+	if *d.a == &quot;&quot; {
+		fmt.Println(&quot;a's value has changed to an empty string&quot;)
+	}
+
+}
+</code></pre>
+
+<p>This is trivial but comes up quite often.</p>
+
+
+  </article>
+
+<footer class="site-footer">
+  <span itemscope itemtype="http://schema.org/Person">
+    <link itemprop="url" href="https://adnaan.badr.in">
+    <span itemprop="name">Adnaan Badr</span>
+
+    <br>
+
+    <a itemprop="sameAs" href="https://github.com/adnaan" title="GitHub">Github</a>
+
+    <a itemprop="sameAs" href="https://twitter.com/adnaanx" title="Twitter">Twitter</a>
+
+
+    <a itemprop="sameAs" href="https://www.linkedin.com/in/adnaanx"
+      title="LinkedIn">LinkedIn</a>
+
+
+    
+  </span>
+
+  
+</footer>
+</div>
+
+<script src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+
+</html>

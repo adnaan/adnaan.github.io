@@ -36,11 +36,11 @@ The problem arises when we want to check if a field&amp;rsquo;s value has change
     </item>
     
     <item>
-      <title>Ops: My K8s Cli Toolset</title>
-      <link>https://adnaan.badr.in/blog/2019/10/25/ops-my-k8s-cli-toolset/</link>
+      <title>Devops: My K8s Cli Toolset</title>
+      <link>https://adnaan.badr.in/blog/2019/10/25/devops-my-k8s-cli-toolset/</link>
       <pubDate>Fri, 25 Oct 2019 07:31:21 +0200</pubDate>
       
-      <guid>https://adnaan.badr.in/blog/2019/10/25/ops-my-k8s-cli-toolset/</guid>
+      <guid>https://adnaan.badr.in/blog/2019/10/25/devops-my-k8s-cli-toolset/</guid>
       <description>In the last couple of months, the command line tools I have been using to interact with kubernetes hasn&amp;rsquo;t seen any additions. It&amp;rsquo;s a good time to write it down.
  kube-ps1: Sets the current k8s ctx as info line to your prompt.
  kubectx, kubens + fzf: Switch quickly between contexts and namespaces.

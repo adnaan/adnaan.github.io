@@ -102,6 +102,18 @@
 </ul>
 <p>But you cannot configure, what you do not understand. The knowledge of low level concepts will still be required at some level, but the low level complexity will keep moving towards abstractions built by the behemoths(k8s, container runtimes, GCP, AWS, Azure.). I wonder how long before we start talking about infrastructure solely in terms of software objects and languages and tools which can help manage them. IMO we are pretty close already.</p>
 <p>Devops as a traditional centralised role is dead. It&rsquo;s transforming into a discipline where cloud-infra focused engineers work with application focused engineers to deliver software quickly and efficiently. These &ldquo;cloud-infra&rdquo; focused engineers practice classical software principles and full fledged languages. With respect to their traits, such engineers are closer to application platform engineers than to a traditional devops engineer.</p>
+<p>Following are the behaviours I have seen while practicing a similar role for last 2-3 years:</p>
+<ul>
+<li>Use terraform, terraform cdk, pulumi like tools to setup compute, network and datastore infra.</li>
+<li>Generate kubernetes manifests using pulumi, jsonnet, jkcfg, AWS CDK or similar tools.</li>
+<li>Generate monitoring configuration for a Cloud Provider or third-parties like grafana, prometheus etc using SDKs.</li>
+<li>Write or generate CI/CD manifests.</li>
+<li>Develop gitops tool to distribute permissions and secrets.</li>
+<li>Develop gitops tools to add/remove frequently provisioned resources, e.g. Buckets, Pubsub.</li>
+<li>Develop gitops tool to automate oncall scheduling and paging.</li>
+<li>Develop platform tools to standardise platform task, e.g: webhook tunnel, notification schedule, API gateways etc.</li>
+<li>Write maintainable, testable code for using established good practices.</li>
+</ul>
 <p>How about a new title for the devops role then ? Just flinging out some respectable-sounding titles here:</p>
 <ul>
 <li>Infrastructure Tools/Apps Developer/Engineer</li>

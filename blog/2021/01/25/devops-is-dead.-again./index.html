@@ -72,9 +72,9 @@
 <p>The term &ldquo;devops&rdquo; itself has a lot of meanings. Here we are talking about a role which used to specialise in operating systems, monitoring and CI/CD tools with a 80:20 division of work. 80 percent of infra work was done by devops specialists while 20 percent of work(mostly tinkering with config) was handled by developers. Now a big chunk of that 80 percent work has moved to Cloud Services(AWS, GCP, Azure, Github, Gitlab etc.). A few observations:</p>
 <ul>
 <li>The tech stack is just a bunch of yamls.</li>
-<li>Deep OS knowledge no longer required: Docker and k8s ate that lunch.</li>
+<li>Deep operating system and networking knowledge is no longer at premium: Docker and k8s ate that lunch.</li>
 <li>Configuring infrastructure is now like writing mini-apps for the Cloud API(aws, gcp, azure) using terraform, deployment manager, cloud formation etc.</li>
-<li>Configuring observability infrastructure is also done over an API. See above.</li>
+<li>Configuring observability infrastructure is also done over an API. See above. Cloud providers have made available open source SDKs to connect to the monitoring stack. It has become a lot easier for developers to bring in observability than before.</li>
 <li>Permissions management is also an API concern. Although there is still some <em>devops</em> work required to make it work across multiple services( think GCP + Github + Gitlab).</li>
 <li>Designing and building CI/CD pipelines have moved in the hands of developers: Github Actions, Gitlab, CircleCI, <a href="https://tekton.dev/">https://tekton.dev/</a> etc. have made writing pipelines less complicated(as compared to Jenkins) and now its just yamls down to the turtles.</li>
 <li>Infrastructure performance is now a cost concern. One can always scale.</li>
@@ -102,10 +102,10 @@
 <p>But you cannot configure, what you do not understand. The knowledge of low level concepts will still be required at some level, but the low level complexity will keep moving towards abstractions built by the behemoths(k8s, container runtimes, GCP, AWS, Azure.)</p>
 <p>How about a new title for the devops role then ? Just flinging out some respectable-sounding titles here:</p>
 <ul>
-<li>Infrastructure Tools Developer/Engineer</li>
-<li>Cloud Native Tools Developer/Engineer</li>
+<li>Infrastructure Tools/Apps Developer/Engineer</li>
+<li>Cloud Native Tools/Apps Developer/Engineer</li>
 <li>Configuration Ops/ConfigOps</li>
-<li>Developer Tools Engineer</li>
+<li>Developer Tools/Apps Engineer</li>
 <li>Cloud Native Specialist</li>
 <li>Cloud Config Ops</li>
 </ul>

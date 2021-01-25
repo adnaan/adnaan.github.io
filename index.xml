@@ -26,8 +26,8 @@ The term, Devops has a lot of meanings. Here we are talking about the role which
       <description>After go version 1.13+, go mod -vendor prunes non-package directories from vendor. This is noted here: https://github.com/golang/go/issues/26366
 So, how do we include a non-package directory(sql migrations, yamls etc.) to be included in the vendor ?
 Example directory:
-migrations create_table.sql.up create_table.sql.down migrations.go migrations.go:
-// +build migrations package migrations The conditionally compiled file migrations.go will force go mod -vendor to include it.</description>
+1 2 3 4  migrations create_table.sql.up create_table.sql.down migrations.go   migrations.go:
+1 2  // +build migrations package migrations   The conditionally compiled file migrations.go will force go mod -vendor to include it.</description>
     </item>
     
     <item>
@@ -50,8 +50,7 @@ A process can be encoded in a document, enforced by a human or automated by a to
       
       <guid>https://adnaan.badr.in/blog/2019/10/25/go-pattern-is-zero-value-a-change/</guid>
       <description>As we know in Go, variables declared without an explicit initial value are assigned their zero value.
-package main import &amp;#34;fmt&amp;#34; type data struct { a string } func main() { var d data fmt.Printf(&amp;#34;%+v&amp;#34;,d) } // go run main.go // output: {a:}  Here a is an empty string. This is ok. Sane defaults.
-The problem arises when we want to check if a field&amp;rsquo;s value has changed to it&amp;rsquo;s zero value.</description>
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  package main import &amp;#34;fmt&amp;#34; type data struct { a string } func main() { var d data fmt.Printf(&amp;#34;%+v&amp;#34;,d) } // go run main.go // output: {a:}    Here a is an empty string. This is ok.</description>
     </item>
     
     <item>
@@ -75,7 +74,7 @@ The problem arises when we want to check if a field&amp;rsquo;s value has change
       <guid>https://adnaan.badr.in/blog/2019/10/23/go-pattern-test-rig-func/</guid>
       <description>Often we need per-test setup and teardown. This is especially useful for third party integration testing, for e.g. testing against a database.
 It looks fairly simple. Extending the example from a previous post: Nifty Go Pkg: ory/dockertest
-func redisRig(t *testing.T, fn func(rdb *redis.Client)) { var err error pool, err := dockertest.NewPool(&amp;#34;&amp;#34;) assert.Nil(t, err) resource, err := pool.Run(&amp;#34;redis&amp;#34;, &amp;#34;5.0.6&amp;#34;, nil) assert.Nil(t, err) var rdb *redis.Client err = pool.Retry(func() error { rdb = newRedisClient(resource.</description>
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27  func redisRig(t *testing.T, fn func(rdb *redis.</description>
     </item>
     
     <item>
@@ -87,7 +86,7 @@ func redisRig(t *testing.T, fn func(rdb *redis.Client)) { var err error pool, er
       <description>A package I often use and find extremely useful for intergation testing is dockertest
 Use Case You want to setup and tear down a real database for each integration test run.
 Example An example from the dockertest repository
-var db *redis.Client var err error pool, err = dockertest.NewPool(&amp;#34;&amp;#34;) if err != nil { log.Fatalf(&amp;#34;Could not connect to docker: %s&amp;#34;, err) } resource, err := pool.Run(&amp;#34;redis&amp;#34;, &amp;#34;3.2&amp;#34;, nil) if err != nil { log.</description>
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24  var db *redis.Client var err error pool, err = dockertest.</description>
     </item>
     
     <item>
@@ -99,7 +98,7 @@ var db *redis.Client var err error pool, err = dockertest.NewPool(&amp;#34;&amp;
       <description>This post describes a simple pattern to supervise multiple http/grpc/tcp servers in a go program.
 Packages Used: context, errgroup, os, os/signal
 After receiving a termination signal, we wait on multiple servers to shut them down gracefully. This is done using the errgroup package.
-$ go run main.go 2019/10/21 11:55:59 server 2 listening on port 8081 2019/10/21 11:55:59 server 1 listening on port 8080 ^C2019/10/21 11:56:10 shutting down servers, please wait... 2019/10/21 11:56:14 a graceful bye To see the delay in shutdown in action, we can mimic a alive open connection by sending a request from the browser i.</description>
+1 2 3 4 5  $ go run main.go 2019/10/21 11:55:59 server 2 listening on port 8081 2019/10/21 11:55:59 server 1 listening on port 8080 ^C2019/10/21 11:56:10 shutting down servers, please wait.</description>
     </item>
     
     <item>
@@ -122,7 +121,7 @@ Technical Practices   Continuous Integration, Delivery, Deployment.</description
       <guid>https://adnaan.badr.in/blog/2019/01/10/how-to-mock-in-go/</guid>
       <description>We often need to simulate or mimic an object to create a deterministic, fast and network-independent object. Such an object is useful while testing. This practice is also known as mocking. Let&amp;rsquo;s look at a few approaches to mock in Go. Since database is one of the components which is often mocked, let&amp;rsquo;s look at a stubbed out example for it.
 Example So if you have a type User.
-... type User struct { ID string Name string } and a type Storage which represents a database.</description>
+1 2 3 4 5  .</description>
     </item>
     
     <item>
@@ -132,7 +131,7 @@ Example So if you have a type User.
       
       <guid>https://adnaan.badr.in/blog/2017/07/20/a-statsd-http-handler-wrapper/</guid>
       <description>Statsd is a simple and effective tool to trace app metrics: http request latency, throughput, runtime metrics etc. Using the package alexcesaro/statsd.v2, tracking response time of a request is a one liner:
-func main(){ r := chi.NewRouter() r.Get(&amp;#34;/&amp;#34;,handleHome) } func handleHome(w http.ResponseWriter, r *http.Request) { defer c.NewTiming().Send(&amp;#34;homepage.response_time&amp;#34;) defer c.Increment(&amp;#34;foo.counter&amp;#34;) time.Sleep(time.Millisecond * 1000) w.WriteHeader(http.StatusOK) w.Write([]byte(&amp;#34;OK&amp;#34;)) } But this gets cumbersome if you have more than a couple of handlers and would want to track other metrics too.</description>
+1 2 3 4 5 6 7 8 9 10 11 12 13  func main(){ r := chi.NewRouter() r.Get(&amp;#34;/&amp;#34;,handleHome) } func handleHome(w http.ResponseWriter, r *http.Request) { defer c.NewTiming().Send(&amp;#34;homepage.response_time&amp;#34;) defer c.Increment(&amp;#34;foo.counter&amp;#34;) time.Sleep(time.Millisecond * 1000) w.WriteHeader(http.StatusOK) w.Write([]byte(&amp;#34;OK&amp;#34;)) }   But this gets cumbersome if you have more than a couple of handlers and would want to track other metrics too.</description>
     </item>
     
     <item>

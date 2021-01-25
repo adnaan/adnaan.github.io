@@ -18,6 +18,17 @@ The term &amp;ldquo;devops&amp;rdquo; itself has a lot of meanings. Here we are 
     </item>
     
     <item>
+      <title>Go Modest</title>
+      <link>https://adnaan.badr.in/blog/2020/12/25/go-modest/</link>
+      <pubDate>Fri, 25 Dec 2020 15:52:31 +0100</pubDate>
+      
+      <guid>https://adnaan.badr.in/blog/2020/12/25/go-modest/</guid>
+      <description>Github: https://github.com/adnaan/gomodest
+GOMODEST is a Multi Page App(MPA) starter kit using Go&amp;rsquo;s html/template, SvelteJS and StimulusJS. It is inspired from modest approaches to building webapps as enlisted in https://modestjs.works/. It can be used as a template to spin off simple Go webapps.
+Motivation I am a devops engineer who dabbles in UI for side projects, internal tools and such. The SPA/ReactJS ecosystem is too costly for me. This is an alternative approach.</description>
+    </item>
+    
+    <item>
       <title>Go Trick: Vendoring Non-Package Directory</title>
       <link>https://adnaan.badr.in/blog/2020/03/13/go-trick-vendoring-non-package-directory/</link>
       <pubDate>Fri, 13 Mar 2020 11:45:12 +0100</pubDate>

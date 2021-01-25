@@ -1,420 +1,373 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.58.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.79.0" />
 
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="Adnaan Badr">
-  <meta property="og:url" content="https://adnaan.badr.in/blog/2019/01/10/how-to-mock-in-go/">
-
-  <title>How to Mock in Go - Time Traveling Gopher</title>
-  <meta property="og:title" content="How to Mock in Go - Time Traveling Gopher">
-  <meta property="og:type" content="article">
-  <meta name="description" content="">
-
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Arvo:400,700">
-  <link rel="stylesheet" href="/css/highlight.css">
-  <link rel="stylesheet" href="/css/journal.css">
-  <link href="/index.xml" rel="alternate" type="application/rss+xml" title="Time Traveling Gopher">
-
+  <title> How to Mock in Go |  Time Traveling Gopher</title>
+  <meta name="description" content="Time Traveling Gopher">
+  <link rel="stylesheet" href="https://adnaan.badr.incss/simpleness.css">
+  <link rel="canonical" href="https://adnaan.badr.in/blog/2019/01/10/how-to-mock-in-go/">
+  <link rel="alternate" type="application/rss+xml" href="" title="Time Traveling Gopher">
+  
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
-  <div class="container">
+  <header class="menus">
+  
+  <a href="https://adnaan.badr.in">Time Traveling Gopher</a>
+  
 
-    <nav class="site-nav">
-      <a href="https://adnaan.badr.in">Index</a>
-    </nav>
+  <nav >
+    
+  </nav>
 
+  <nav class="fontawesome">
+    
+    
+  </nav>
+  
+  
+  <div class="hidden description">Time Traveling Gopher</div>
+  
+</header>
 
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">How to Mock in Go</h1>
-      <time class="post-date" datetime="2019-01-10 20:06:52 UTC">10 Jan 2019</time>
-    </header>
+<article class="article">
+  <header>
+    <h1 style="text-align: center;" >How to Mock in Go</h1>
+
+    <div class="post-meta">
+    
+      <time datetime="2019-01-10T20:06:52Z">January 10, 2019</time> &nbsp; 
+    
+
+     &nbsp;
+
+    
+    
+    
 
     
 
-<p>We often need to simulate or mimic an object to create a deterministic, fast and network-independent object. Such an object is useful while testing. This practice is also known as mocking. Let&rsquo;s look at a few approaches to mock in Go. Since database is one of the components which is often mocked, let&rsquo;s look at a stubbed out example for it.</p>
+    
+    </div>
+  </header>
 
+   
+
+  <div class="text">
+    <p>We often need to simulate or mimic an object to create a deterministic, fast and network-independent object. Such an object is useful while testing. This practice is also known as mocking. Let&rsquo;s look at a few approaches to mock in Go. Since database is one of the components which is often mocked, let&rsquo;s look at a stubbed out example for it.</p>
 <h2 id="example">Example</h2>
-
 <p>So if you have a type <code>User</code>.</p>
-
-<pre><code class="language-go">...
-type User struct {
-    ID string
-    Name string
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">User</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">ID</span> <span style="color:#66d9ef">string</span>
+    <span style="color:#a6e22e">Name</span> <span style="color:#66d9ef">string</span>
 }
-</code></pre>
-
-<p>and a type <code>Storage</code> which represents a database.</p>
-
-<pre><code class="language-go">...
-type Storage struct {
-    db *sql.DB
+</code></pre></div><p>and a type <code>Storage</code> which represents a database.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Storage</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>
 }
 
-func (s *Storage) CreateUser(user User) error {
-    ...
-    s.db.Exec(...)
-    ...
-    return nil
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Storage</span>) <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+    <span style="color:#f92672">...</span>
+    <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Exec</span>(<span style="color:#f92672">...</span>)
+    <span style="color:#f92672">...</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
-</code></pre>
-
-<p>In the above psuedo-code there are two ways to mock the behaviour of <code>Storage</code> without using a real db connection. The first way is to mock the <code>db</code> object itself. Driver-level mocking is not trivial but it&rsquo;s possible to find packages out there: <a href="https://github.com/DATA-DOG/go-sqlmock">DATA-DOG/go-sqlmock</a>. We won&rsquo;t talk about it in this post. The second way is to mock the <code>CreateUser</code> method. Let&rsquo;s see the approaches to mock out the methods.</p>
-
+</code></pre></div><p>In the above psuedo-code there are two ways to mock the behaviour of <code>Storage</code> without using a real db connection. The first way is to mock the <code>db</code> object itself. Driver-level mocking is not trivial but it&rsquo;s possible to find packages out there: <a href="https://github.com/DATA-DOG/go-sqlmock">DATA-DOG/go-sqlmock</a>. We won&rsquo;t talk about it in this post. The second way is to mock the <code>CreateUser</code> method. Let&rsquo;s see the approaches to mock out the methods.</p>
 <h2 id="how-to-mock">How to mock</h2>
-
 <h3 id="1-using-interfaces">1. Using Interfaces</h3>
-
 <p>To mock out the <code>Storage</code> type, we can declare an interface to have a real and a mock implementation. So instead of creating a <code>type Storage struct</code>, we create a <code>type Storage interface</code>.</p>
-
-<pre><code class="language-go">...
-type Storage interface {
-    CreateUser(user User) error
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Storage</span> <span style="color:#66d9ef">interface</span> {
+    <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span>
 }
 
 
-</code></pre>
-
-<p>Implement a real storage for the interface <code>Storage</code>.</p>
-
-<pre><code class="language-go">...
-func NewStorage(db *sql.DB) Storage {
-    return &amp;defaultStorage{db : db}
+</code></pre></div><p>Implement a real storage for the interface <code>Storage</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewStorage</span>(<span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>) <span style="color:#a6e22e">Storage</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">defaultStorage</span>{<span style="color:#a6e22e">db</span> : <span style="color:#a6e22e">db</span>}
 }
 
-type defaultStorage struct {
-    db *sql.DB
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">defaultStorage</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>
 }
 
-func (d *defaultStorage) CreateUser(user User) error {
-    ...
-    d.db.Exec(...)
-    ...
-    return nil
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">d</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">defaultStorage</span>) <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+    <span style="color:#f92672">...</span>
+    <span style="color:#a6e22e">d</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Exec</span>(<span style="color:#f92672">...</span>)
+    <span style="color:#f92672">...</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
-</code></pre>
-
-<p>and a mock storage.</p>
-
-<pre><code class="language-go">...
-func NewMockStorage() Storage {
-    return &amp;mockStorage{users: make(map[int64]User)}
+</code></pre></div><p>and a mock storage.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewMockStorage</span>() <span style="color:#a6e22e">Storage</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">mockStorage</span>{<span style="color:#a6e22e">users</span>: make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int64</span>]<span style="color:#a6e22e">User</span>)}
 }
 
-type mockStorage struct {
-    users map[int64]User
-    lastID int64
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">mockStorage</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">users</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int64</span>]<span style="color:#a6e22e">User</span>
+    <span style="color:#a6e22e">lastID</span> <span style="color:#66d9ef">int64</span>
 }
 
-func (m *mockStorage) CreateUser(user User) error {
-    ...
-    m.users[lastID] = user
-    ...
-    return nil
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mockStorage</span>) <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+    <span style="color:#f92672">...</span>
+    <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">users</span>[<span style="color:#a6e22e">lastID</span>] = <span style="color:#a6e22e">user</span>
+    <span style="color:#f92672">...</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
-</code></pre>
+</code></pre></div><p>Alternatively, one could split this into multiple packages to keep the imports more sensible.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
 
-<p>Alternatively, one could split this into multiple packages to keep the imports more sensible.</p>
-
-<pre><code class="language-go">
-
-pkg/storage/
-    mocksql/
-    sql/
-    storage.go
+<span style="color:#a6e22e">pkg</span><span style="color:#f92672">/</span><span style="color:#a6e22e">storage</span><span style="color:#f92672">/</span>
+    <span style="color:#a6e22e">mocksql</span><span style="color:#f92672">/</span>
+    <span style="color:#a6e22e">sql</span><span style="color:#f92672">/</span>
+    <span style="color:#a6e22e">storage</span>.<span style="color:#66d9ef">go</span>
 
 
-</code></pre>
-
-<p><code>sql.go</code></p>
-
-<pre><code class="language-go">...
-func New(db *sql.DB) Storage {
-    return &amp;storage{db: db}
+</code></pre></div><p><code>sql.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>) <span style="color:#a6e22e">Storage</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">storage</span>{<span style="color:#a6e22e">db</span>: <span style="color:#a6e22e">db</span>}
 }
 
-type storage struct{
-    db *sql.DB
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">storage</span> <span style="color:#66d9ef">struct</span>{
+    <span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>
 }
 
-func (s *storage) CreateUser(user User) error {
-    ...
-    s.db.Exec(...)
-    ...
-    return nil
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">storage</span>) <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+    <span style="color:#f92672">...</span>
+    <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Exec</span>(<span style="color:#f92672">...</span>)
+    <span style="color:#f92672">...</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
-</code></pre>
-
-<p><code>mocksql/sql.go</code></p>
-
-<pre><code class="language-go">...
-func New() Storage {
-    return &amp;mockStorage{users: make(map[int64]User)}
+</code></pre></div><p><code>mocksql/sql.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">New</span>() <span style="color:#a6e22e">Storage</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">mockStorage</span>{<span style="color:#a6e22e">users</span>: make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int64</span>]<span style="color:#a6e22e">User</span>)}
 }
 
-type mockStorage struct {
-    users map[int64]User
-    lastID int64
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">mockStorage</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">users</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int64</span>]<span style="color:#a6e22e">User</span>
+    <span style="color:#a6e22e">lastID</span> <span style="color:#66d9ef">int64</span>
 }
 
-func (m *mockStorage) CreateUser(user User) error {
-    ...
-    m.users[lastID] = user
-    ...
-    return nil
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mockStorage</span>) <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+    <span style="color:#f92672">...</span>
+    <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">users</span>[<span style="color:#a6e22e">lastID</span>] = <span style="color:#a6e22e">user</span>
+    <span style="color:#f92672">...</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
-</code></pre>
-
-<p><code>storage.go</code></p>
-
-<pre><code class="language-go">...
-type Storage interface {
-    CreateUser(user User) error
+</code></pre></div><p><code>storage.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Storage</span> <span style="color:#66d9ef">interface</span> {
+    <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span>
 }
 
-func NewSQL(db *sql.DB) Storage {
-    return sql.New(db)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewSQL</span>(<span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>) <span style="color:#a6e22e">Storage</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">db</span>)
 }
 
-func NewMockSQL() Storage {
-    return mocksql.New()
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewMockSQL</span>() <span style="color:#a6e22e">Storage</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mocksql</span>.<span style="color:#a6e22e">New</span>()
 }
-</code></pre>
+</code></pre></div><p>To import. <code>user.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;github.com/myuser/mypkg/pkg/storage&#34;</span>
 
-<p>To import. <code>user.go</code></p>
+<span style="color:#f92672">...</span>
 
-<pre><code class="language-go">import &quot;github.com/myuser/mypkg/pkg/storage&quot;
+<span style="color:#a6e22e">storage</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">storage</span>.<span style="color:#a6e22e">NewSQL</span>(<span style="color:#a6e22e">db</span>)
+</code></pre></div><p><code>user_test.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;github.com/myuser/mypkg/pkg/storage&#34;</span>
 
-...
+<span style="color:#f92672">...</span>
 
-storage := storage.NewSQL(db)
-</code></pre>
-
-<p><code>user_test.go</code></p>
-
-<pre><code class="language-go">import &quot;github.com/myuser/mypkg/pkg/storage&quot;
-
-...
-
-storage := storage.NewMockSQL()
-</code></pre>
-
-<p>One could imagine that if the <code>Storage</code> interface has tens of methods or there are several interfaces like it, it could get quite cumbersome to write out the mock implementations for it. Fortunately there&rsquo;s tooling to help out.</p>
-
+<span style="color:#a6e22e">storage</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">storage</span>.<span style="color:#a6e22e">NewMockSQL</span>()
+</code></pre></div><p>One could imagine that if the <code>Storage</code> interface has tens of methods or there are several interfaces like it, it could get quite cumbersome to write out the mock implementations for it. Fortunately there&rsquo;s tooling to help out.</p>
 <h4 id="generating-mocks">Generating Mocks</h4>
-
 <h5 id="a-use-an-editor-plugin">a. Use an editor plugin</h5>
-
 <p>In <code>vscode</code> open the command paletter(cmd+shift+p), move cursor on the target stub and run <code>Go: Generate Interface Stubs</code>. Most of the editors supporting Go have this feature integrated.</p>
-
 <h5 id="b-use-a-cli-or-package">b. Use a cli or package</h5>
-
 <p><a href="https://godoc.org/github.com/stretchr/testify/mock">testify/mock</a> <a href="https://godoc.org/github.com/golang/mock">golang/mock</a></p>
-
 <h3 id="2-using-functions">2. Using Functions</h3>
-
 <p>While using interfaces to mock out behaviour is quite alright, it might look too permanent for some projects. Also, one could rather want an approach where the mocking code is completely contained within a test function. There could be two approaches here.</p>
-
 <h4 id="a-custom-function-types">a. Custom function types</h4>
-
 <p>This approach is based on making <code>CreateUser</code> as a field of the struct instead of a method on the struct. Go treats functions as a first class citizen. <code>store.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;github.com/adnaan/mypkg/sqldb&#34;</span>
 
-<pre><code class="language-go">...
-import &quot;github.com/adnaan/mypkg/sqldb&quot;
-
-type Storage struct {
-    CreateUser func(user User) error
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Storage</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">CreateUser</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span>
 }
 
-...
-storage := Storage {
-    CreateUser: func(user User) error {
-                ...
-                db := sqldb.Get()
-                db.Exec(...)
-                ...
-        return nil
+<span style="color:#f92672">...</span>
+<span style="color:#a6e22e">storage</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Storage</span> {
+    <span style="color:#a6e22e">CreateUser</span>: <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+                <span style="color:#f92672">...</span>
+                <span style="color:#a6e22e">db</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sqldb</span>.<span style="color:#a6e22e">Get</span>()
+                <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Exec</span>(<span style="color:#f92672">...</span>)
+                <span style="color:#f92672">...</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
     },
 }
 
-storage.CreateUser(user)
-</code></pre>
+<span style="color:#a6e22e">storage</span>.<span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span>)
+</code></pre></div><p><code>store_test.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
 
-<p><code>store_test.go</code></p>
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">lastID</span> = <span style="color:#ae81ff">0</span>
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">users</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int64</span>]<span style="color:#a6e22e">User</span>)
 
-<pre><code class="language-go">...
-
-var lastID = 0
-var users = make(map[int64]User)
-
-mockStorage := Storage {
-    CreateUser: func(user User) error {
-                ...
-                users[lastID] = user
-                ...
-        return nil
+<span style="color:#a6e22e">mockStorage</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Storage</span> {
+    <span style="color:#a6e22e">CreateUser</span>: <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+                <span style="color:#f92672">...</span>
+                <span style="color:#a6e22e">users</span>[<span style="color:#a6e22e">lastID</span>] = <span style="color:#a6e22e">user</span>
+                <span style="color:#f92672">...</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
     },
 }
 
-mockStorage.CreateUser(user)
-</code></pre>
-
-<h4 id="b-mocked-struct-with-custom-function-types">b. Mocked struct with custom function types</h4>
-
+<span style="color:#a6e22e">mockStorage</span>.<span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span>)
+</code></pre></div><h4 id="b-mocked-struct-with-custom-function-types">b. Mocked struct with custom function types</h4>
 <p>In this approach one still has a <code>Storage</code> interface but also implements a mock struct which holds mocked equivalents of the interface methods. <code>store.go</code></p>
-
-<pre><code class="language-go">...
-type Storage interface {
-    CreateUser(user User) error
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Storage</span> <span style="color:#66d9ef">interface</span> {
+    <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span>
 }
 
-func New(db *sql.DB) Storage {
-    return &amp;storage{db: db}
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>) <span style="color:#a6e22e">Storage</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">storage</span>{<span style="color:#a6e22e">db</span>: <span style="color:#a6e22e">db</span>}
 }
 
-type storage struct {
-    db *sql.DB
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">storage</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>
 }
 
-func (s *storage) CreateUser(user User) error {
-    ...
-    s.db.Exec(...)
-    ...
-    return nil
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">storage</span>) <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+    <span style="color:#f92672">...</span>
+    <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Exec</span>(<span style="color:#f92672">...</span>)
+    <span style="color:#f92672">...</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
-</code></pre>
+</code></pre></div><p><code>store_test.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
 
-<p><code>store_test.go</code></p>
-
-<pre><code class="language-go">...
-
-type StorageMock struct {
-    CreateUserFunc func(user User) error
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">StorageMock</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">CreateUserFunc</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span>
 }
 
-func (s *StorageMock) CreateUser(user User) error {
-    return mock.CreateUserFunc(user)
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">StorageMock</span>) <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mock</span>.<span style="color:#a6e22e">CreateUserFunc</span>(<span style="color:#a6e22e">user</span>)
 }
 
-...
-var db = make(map[int]User)
-var lastID = 0
+<span style="color:#f92672">...</span>
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">db</span> = make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int</span>]<span style="color:#a6e22e">User</span>)
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">lastID</span> = <span style="color:#ae81ff">0</span>
 
-...
+<span style="color:#f92672">...</span>
 
-mockStorage := &amp;StorageMock{
-    CreateUserFunc: func(user User) error {
-        ...
-        db[lastID] = user
-        ...
-        return nil
+<span style="color:#a6e22e">mockStorage</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">StorageMock</span>{
+    <span style="color:#a6e22e">CreateUserFunc</span>: <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+        <span style="color:#f92672">...</span>
+        <span style="color:#a6e22e">db</span>[<span style="color:#a6e22e">lastID</span>] = <span style="color:#a6e22e">user</span>
+        <span style="color:#f92672">...</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
     }
 }
 
-err := mockStorage.CreateUser(user)
-</code></pre>
-
-<p>There is tooling available to generate <code>StorageMock</code> via <a href="https://github.com/matryer/moq">moq</a></p>
-
+<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">mockStorage</span>.<span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span>)
+</code></pre></div><p>There is tooling available to generate <code>StorageMock</code> via <a href="https://github.com/matryer/moq">moq</a></p>
 <h3 id="3-using-embedded-types">3. Using Embedded Types</h3>
-
 <p>We might want to partially mock a type. The technique of embedding types allows us to mock out only the methods we want to. <code>store.go</code></p>
-
-<pre><code class="language-go">...
-type Storage interface {
-    CreateUser(user User) error
-    ExistsUser(userID int64) bool
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Storage</span> <span style="color:#66d9ef">interface</span> {
+    <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span>
+    <span style="color:#a6e22e">ExistsUser</span>(<span style="color:#a6e22e">userID</span> <span style="color:#66d9ef">int64</span>) <span style="color:#66d9ef">bool</span>
 }
 
-func New(db *sql.DB) Storage {
-    return &amp;storage{db: db}
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>) <span style="color:#a6e22e">Storage</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">storage</span>{<span style="color:#a6e22e">db</span>: <span style="color:#a6e22e">db</span>}
 }
 
-type storage struct {
-    db *sql.DB
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">storage</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">db</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sql</span>.<span style="color:#a6e22e">DB</span>
 }
 
-func (s *storage) CreateUser(user User) error {
-    ...
-    s.db.Exec(...)
-    ...
-    return nil
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">storage</span>) <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+    <span style="color:#f92672">...</span>
+    <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Exec</span>(<span style="color:#f92672">...</span>)
+    <span style="color:#f92672">...</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
 
-func (s *storage) ExistsUser(userID int64) bool {
-    ...
-    s.db.Exec(...)
-    ...
-    return false
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">storage</span>) <span style="color:#a6e22e">ExistsUser</span>(<span style="color:#a6e22e">userID</span> <span style="color:#66d9ef">int64</span>) <span style="color:#66d9ef">bool</span> {
+    <span style="color:#f92672">...</span>
+    <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">Exec</span>(<span style="color:#f92672">...</span>)
+    <span style="color:#f92672">...</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
 }
-</code></pre>
+</code></pre></div><p><code>store_test.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span>
 
-<p><code>store_test.go</code></p>
-
-<pre><code class="language-go">...
-
-type storageMock struct {
-    storage // embed type storage which implements the Storage
-            //interface
-    users map[int64]User
-    lastID int64
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">storageMock</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">storage</span> <span style="color:#75715e">// embed type storage which implements the Storage
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">//interface
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">users</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int64</span>]<span style="color:#a6e22e">User</span>
+    <span style="color:#a6e22e">lastID</span> <span style="color:#66d9ef">int64</span>
 }
-// Mock only the CreateUser method
-func (s *storageMock) CreateUser(user User) error {
-        ...
-        s.users[lastID] = user
-        ...
-        return nil
+<span style="color:#75715e">// Mock only the CreateUser method
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">storageMock</span>) <span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span> <span style="color:#a6e22e">User</span>) <span style="color:#66d9ef">error</span> {
+        <span style="color:#f92672">...</span>
+        <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">users</span>[<span style="color:#a6e22e">lastID</span>] = <span style="color:#a6e22e">user</span>
+        <span style="color:#f92672">...</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
 }
-...
+<span style="color:#f92672">...</span>
 
-mockStorage := &amp;storageMock{}
-// calls the mocked CreateUser Method
-err := mockStorage.CreateUser(user)
-// calls the original ExistsUser Method
-err = mockStorage.ExistsUser(111)
-</code></pre>
-
-<h2 id="conclusion">Conclusion</h2>
-
+<span style="color:#a6e22e">mockStorage</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">storageMock</span>{}
+<span style="color:#75715e">// calls the mocked CreateUser Method
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">mockStorage</span>.<span style="color:#a6e22e">CreateUser</span>(<span style="color:#a6e22e">user</span>)
+<span style="color:#75715e">// calls the original ExistsUser Method
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">mockStorage</span>.<span style="color:#a6e22e">ExistsUser</span>(<span style="color:#ae81ff">111</span>)
+</code></pre></div><h2 id="conclusion">Conclusion</h2>
 <p>Depending on a project&rsquo;s complexity, scope and use cases either one of the above mocking approaches could fit. One of the considerations could be other behaviours(apart from mocking) needed for a type. For e.g. the <code>Storage</code> type could have multiple database backends implementations like <code>inmem, postgres, mysql etc.</code> Mock packages in <a href="https://golanglibs.com/search?q=mock">golanglibs.com</a>. Feedback is welcome on <a href="https://twitter.com/adnaanx">Twitter</a> too. Mock well and prosper 🖖</p>
 
+  </div>
 
-  </article>
-
-<footer class="site-footer">
-  <span itemscope itemtype="http://schema.org/Person">
-    <link itemprop="url" href="https://adnaan.badr.in">
-    <span itemprop="name">Adnaan Badr</span>
-
-    <br>
-
-    <a itemprop="sameAs" href="https://github.com/adnaan" title="GitHub">Github</a>
-
-    <a itemprop="sameAs" href="https://twitter.com/adnaanx" title="Twitter">Twitter</a>
-
-
-    <a itemprop="sameAs" href="https://www.linkedin.com/in/adnaanx"
-      title="LinkedIn">LinkedIn</a>
-
+  <footer>
+    <hr class="end-line">
 
     
-  </span>
 
-  
-</footer>
+    
+
+    
+    
+  </footer>
+
+  <div class="comments">
+
+
+
 </div>
 
-<script src="/js/highlight.pack.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+</article>
+
 
 </body>
+<div class="foot">
+  
+  
+
+  
+</div>
+
+
 
 </html>

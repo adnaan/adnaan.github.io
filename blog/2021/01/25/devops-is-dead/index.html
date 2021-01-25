@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.79.0" />
+
+  <title> Devops Is Dead |  Time Traveling Gopher</title>
+  <meta name="description" content="Time Traveling Gopher">
+  <link rel="stylesheet" href="https://adnaan.badr.incss/simpleness.css">
+  <link rel="canonical" href="https://adnaan.badr.in/blog/2021/01/25/devops-is-dead/">
+  <link rel="alternate" type="application/rss+xml" href="" title="Time Traveling Gopher">
+  
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header class="menus">
+  
+  <a href="https://adnaan.badr.in">Time Traveling Gopher</a>
+  
+
+  <nav >
+    
+  </nav>
+
+  <nav class="fontawesome">
+    
+    
+  </nav>
+  
+  
+  <div class="hidden description">Time Traveling Gopher</div>
+  
+</header>
+
+<article class="article">
+  <header>
+    <h1 style="text-align: center;" >Devops Is Dead</h1>
+
+    <div class="post-meta">
+    
+      <time datetime="2021-01-25T14:32:50&#43;01:00">January 25, 2021</time> &nbsp; 
+    
+
+     &nbsp;
+
+    
+    
+    
+
+    
+
+    
+    </div>
+  </header>
+
+   
+
+  <div class="text">
+    <p>The claim: Devops is Dead, seems to be common knowledge. I have heard this in hushed tones over the last couple of years and it&rsquo;s turning quickly into more than whispers.</p>
+<p>The term, Devops has a lot of meanings. Here we are talking about the role which used to specialise in operating systems, monitoring and CI/CD tools with a 80:20 division of work. 80 percent of infra work was done by devops specialists while 20 percent of work(mostly tinkering with config) was handled by developers. Now a big chunk of this 80 percent work has moved to Cloud Services(AWS, GCP, Azure, Github, Gitlab etc.). A few observations:</p>
+<ul>
+<li>The tech stack is just a bunch of yamls.</li>
+<li>Deep OS knowledge no longer required: Docker and k8s ate that lunch.</li>
+<li>Configuring infrastructure is now like writing mini-apps for the Cloud API(aws, gcp, azure) using terraform, deployment manager, cloud formation etc.</li>
+<li>Configuring observability infrastructure is also done over an API. See above.</li>
+<li>Permissions management is also an API concern. Although there is still some <em>devops</em> work required to make it work across multiple services( think GCP + Github + Gitlab).</li>
+<li>Designing and building CI/CD pipelines have moved in the hands of developers: Github Actions, Gitlab, CircleCI, <a href="https://tekton.dev/">https://tekton.dev/</a> etc. have made writing pipelines less complicated(as compared to Jenkins) and now its just yamls down to the turtles.</li>
+<li>Infrastructure performance is now a cost concern. One can always scale.</li>
+<li>Fully integrated solutions like heroku, netlify, vercel, digitalocean apps are removing the low to medium scale website market from the equation.</li>
+<li>Devops as a process of delivering software has always been an organisational concern mostly led by the devops specialists. But since their specialised skills are no longer required, the process drivers can come from any discipline.</li>
+<li>Devops as teachers of infrastructure skills for developers still remains. But if the specialised skills are not being practiced, how long can they keep that crown ? Not for long me thinks.</li>
+<li>Devops as budget keepers are being replaced with cost analysis tools which notify app owners to optimise their usage.</li>
+<li>Devops still practice designing infra architecture(a.k.a cloud native component lego maker) to some extent . This is also getting outsourced to cloud services Support teams and consultancies.</li>
+<li>The request-response cycle is now a pull request-merge cycle due to the adoption of gitops. The devops team creates the self-service tools and gets out of the way.</li>
+</ul>
+<p>A new title for the devops role ? Just flinging out some respectable-sounding titles here:</p>
+<ul>
+<li>Infrastructure Tools Developer/Engineer</li>
+<li>Cloud Native Tools Developer/Engineer</li>
+<li>Configuration Ops</li>
+<li>Developer Tools Engineer</li>
+<li>Cloud Native Specialist</li>
+</ul>
+
+  </div>
+
+  <footer>
+    <hr class="end-line">
+
+    
+
+    
+
+    
+    
+  </footer>
+
+  <div class="comments">
+
+
+
+</div>
+
+</article>
+
+
+</body>
+<div class="foot">
+  
+  
+
+  
+</div>
+
+
+
+</html>

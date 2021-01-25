@@ -1,169 +1,179 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.58.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.79.0" />
 
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="Adnaan Badr">
-  <meta property="og:url" content="https://adnaan.badr.in/blog/2019/10/26/devops-tooling-over-processes/">
-
-  <title>Devops: Tooling Over Processes - Time Traveling Gopher</title>
-  <meta property="og:title" content="Devops: Tooling Over Processes - Time Traveling Gopher">
-  <meta property="og:type" content="article">
-  <meta name="description" content="">
-
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Arvo:400,700">
-  <link rel="stylesheet" href="/css/highlight.css">
-  <link rel="stylesheet" href="/css/journal.css">
-  <link href="/index.xml" rel="alternate" type="application/rss+xml" title="Time Traveling Gopher">
-
+  <title> Devops: Tooling Over Processes |  Time Traveling Gopher</title>
+  <meta name="description" content="Time Traveling Gopher">
+  <link rel="stylesheet" href="https://adnaan.badr.incss/simpleness.css">
+  <link rel="canonical" href="https://adnaan.badr.in/blog/2019/10/26/devops-tooling-over-processes/">
+  <link rel="alternate" type="application/rss+xml" href="" title="Time Traveling Gopher">
+  
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
-  <div class="container">
+  <header class="menus">
+  
+  <a href="https://adnaan.badr.in">Time Traveling Gopher</a>
+  
 
-    <nav class="site-nav">
-      <a href="https://adnaan.badr.in">Index</a>
-    </nav>
+  <nav >
+    
+  </nav>
 
+  <nav class="fontawesome">
+    
+    
+  </nav>
+  
+  
+  <div class="hidden description">Time Traveling Gopher</div>
+  
+</header>
 
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">Devops: Tooling Over Processes</h1>
-      <time class="post-date" datetime="2019-10-26 09:37:33 CEST">26 Oct 2019</time>
-    </header>
+<article class="article">
+  <header>
+    <h1 style="text-align: center;" >Devops: Tooling Over Processes</h1>
+
+    <div class="post-meta">
+    
+      <time datetime="2019-10-26T09:37:33&#43;02:00">October 26, 2019</time> &nbsp; 
+    
+
+     &nbsp;
+
+    
+    
+    
 
     
 
-<p>Devops is a set of technical and non-technical processes. I have talked about it previously here: <a href="https://adnaan.badr.in/blog/2019/10/20/what-is-devops/">What is Devops ?</a>.</p>
+    
+    </div>
+  </header>
 
+   
+
+  <div class="text">
+    <p>Devops is a set of technical and non-technical processes. I have talked about it previously here: <a href="https://adnaan.badr.in/blog/2019/10/20/what-is-devops/">What is Devops ?</a>.</p>
 <p>But how do we go about executing these processes ?</p>
-
 <blockquote>
 <p>In engineering, a process is a series of interrelated tasks that, together, transform inputs into Automation system</p>
 </blockquote>
-
 <p><a href="https://en.wikipedia.org/wiki/Process_(engineering)">Source: Wikipedia</a></p>
-
 <p>A process can be encoded in a document, enforced by a human or automated by a tool. In this post, I claim that any process worth adopting must be done via a tool.</p>
-
 <h3 id="encoded-in-a-document">Encoded in a Document</h3>
-
 <p>A process written down in a document is a nice idea to hear but tough to follow through. One has a confluence or github wiki page, enlisting the steps required to perform a task, and the links to it are thrown to a client&rsquo;s face everytime they ask for it.</p>
-
 <p>But then comes the inevitable back and forth on the interpretation of the written word. In time, the document decays and its content become ineffective and sometimes downright dangerous.</p>
-
 <h3 id="enforced-by-a-human">Enforced by a Human</h3>
-
 <p>A process enforced by a human performs a little better than documents. A human is a dynamic entity and can responds to changes as necessary. But a human is a human. They get sick, go on a vacation or quit.</p>
-
 <h3 id="tooling-over-processes">Tooling over Processes</h3>
-
 <p><strong>A process is communicated</strong>
 <strong>A tool is programmed</strong></p>
-
 <blockquote>
 <p>If something isn&rsquo;t automated as part of a tool, you&rsquo;re going to have to keep communicating it over and over again</p>
 </blockquote>
-
 <p><a href="https://firstround.com/review/This-Startup-Built-Internal-Tools-to-Fuel-Major-Growth-Heres-Their-Approach/">Source: Firstround.com article on Percolate.com</a></p>
-
-<h4 id="what-is-it-what-is-tooling">What is it ? What is Tooling ?</h4>
-
+<h4 id="what-is-it--what-is-tooling-">What is it ? What is Tooling ?</h4>
 <p>Bespoke cli&rsquo;s, ui&rsquo;s, libraries that are highly tailored to the processes of a company. They are built when there aren’t any cost effective market solution with equivalent features.</p>
-
 <h4 id="a-few-devops-processes">A few Devops processes</h4>
-
 <ul>
-<li><p>Provisioning Resources</p></li>
-
-<li><p>Managing Permissions</p></li>
-
-<li><p>Hooking up Monitoring and Alerts</p></li>
-
-<li><p>CI/CD</p></li>
-
-<li><p>Spinning up Test Environments</p></li>
-
-<li><p>Oncall schedules and capturing incidents</p></li>
-
-<li><p>Many more</p></li>
+<li>
+<p>Provisioning Resources</p>
+</li>
+<li>
+<p>Managing Permissions</p>
+</li>
+<li>
+<p>Hooking up Monitoring and Alerts</p>
+</li>
+<li>
+<p>CI/CD</p>
+</li>
+<li>
+<p>Spinning up Test Environments</p>
+</li>
+<li>
+<p>Oncall schedules and capturing incidents</p>
+</li>
+<li>
+<p>Many more</p>
+</li>
 </ul>
-
-<h4 id="what-to-build">What to build ?</h4>
-
+<h4 id="what-to-build-">What to build ?</h4>
 <p>Measure the frequency of process related queries and the time spent to resolve them to find out which tools need to be built.</p>
-
-<h4 id="when-to-build">When to build ?</h4>
-
+<h4 id="when-to-build-">When to build ?</h4>
 <p>Instead of reinventing the wheel, we should first try and look for both free and paid tools which can perform the task. Affordability and integration with internal tools can be concerns here.</p>
-
 <h4 id="avoiding-decay">Avoiding Decay</h4>
-
 <p>A tool can become redundant too. But fortunately since it&rsquo;s code, we can measure the progress of decay. They key is to treat a tool like a product.</p>
-
 <ul>
-<li><p>Measure visits to a tool&rsquo;s features.</p></li>
-
-<li><p>Measure drop offs in the user journey</p></li>
-
-<li><p>Measure latencies and completion durations</p></li>
-
-<li><p>Take surveys to identify usability pain points</p></li>
-
-<li><p><strong>Deprecate features/tools with embarassingly low usage</strong></p></li>
+<li>
+<p>Measure visits to a tool&rsquo;s features.</p>
+</li>
+<li>
+<p>Measure drop offs in the user journey</p>
+</li>
+<li>
+<p>Measure latencies and completion durations</p>
+</li>
+<li>
+<p>Take surveys to identify usability pain points</p>
+</li>
+<li>
+<p><strong>Deprecate features/tools with embarassingly low usage</strong></p>
+</li>
 </ul>
-
-<h4 id="is-it-worth-the-time">Is it worth the time ?</h4>
-
+<h4 id="is-it-worth-the-time-">Is it worth the time ?</h4>
 <p>Although the above recommentations sounds like a lot of investment for something as pedestrian as processes, but the benefits are abundant.</p>
-
 <ul>
-<li><p>Stops repititive communication and prevents decay</p></li>
-
-<li><p>Makes stakeholders self sufficient</p></li>
-
-<li><p><strong>Builds up a product mindset</strong></p></li>
+<li>
+<p>Stops repititive communication and prevents decay</p>
+</li>
+<li>
+<p>Makes stakeholders self sufficient</p>
+</li>
+<li>
+<p><strong>Builds up a product mindset</strong></p>
+</li>
 </ul>
-
 <p>Instead of writing or governing processes, building them into tools makes the collaborative contracts between teams highly visible and clear. For some companies it can be the <a href="https://firstround.com/review/This-Startup-Built-Internal-Tools-to-Fuel-Major-Growth-Heres-Their-Approach/">secret sauce</a> to success.</p>
-
 <p>As is tradition, the closest XKCD reference I could find.</p>
+<p><img src="https://imgs.xkcd.com/comics/is_it_worth_the_time.png" alt="alt text" title="is it worth the time"></p>
 
-<p><img src="https://imgs.xkcd.com/comics/is_it_worth_the_time.png" alt="alt text" title="is it worth the time" /></p>
+  </div>
 
-
-  </article>
-
-<footer class="site-footer">
-  <span itemscope itemtype="http://schema.org/Person">
-    <link itemprop="url" href="https://adnaan.badr.in">
-    <span itemprop="name">Adnaan Badr</span>
-
-    <br>
-
-    <a itemprop="sameAs" href="https://github.com/adnaan" title="GitHub">Github</a>
-
-    <a itemprop="sameAs" href="https://twitter.com/adnaanx" title="Twitter">Twitter</a>
-
-
-    <a itemprop="sameAs" href="https://www.linkedin.com/in/adnaanx"
-      title="LinkedIn">LinkedIn</a>
-
+  <footer>
+    <hr class="end-line">
 
     
-  </span>
 
-  
-</footer>
+    
+
+    
+    
+  </footer>
+
+  <div class="comments">
+
+
+
 </div>
 
-<script src="/js/highlight.pack.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+</article>
+
 
 </body>
+<div class="foot">
+  
+  
+
+  
+</div>
+
+
 
 </html>

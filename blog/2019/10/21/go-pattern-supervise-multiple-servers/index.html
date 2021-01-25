@@ -1,200 +1,216 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.58.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.79.0" />
 
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="Adnaan Badr">
-  <meta property="og:url" content="https://adnaan.badr.in/blog/2019/10/21/go-pattern-supervise-multiple-servers/">
-
-  <title>Go Pattern: Supervise Multiple Servers - Time Traveling Gopher</title>
-  <meta property="og:title" content="Go Pattern: Supervise Multiple Servers - Time Traveling Gopher">
-  <meta property="og:type" content="article">
-  <meta name="description" content="">
-
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Arvo:400,700">
-  <link rel="stylesheet" href="/css/highlight.css">
-  <link rel="stylesheet" href="/css/journal.css">
-  <link href="/index.xml" rel="alternate" type="application/rss+xml" title="Time Traveling Gopher">
-
+  <title> Go Pattern: Supervise Multiple Servers |  Time Traveling Gopher</title>
+  <meta name="description" content="Time Traveling Gopher">
+  <link rel="stylesheet" href="https://adnaan.badr.incss/simpleness.css">
+  <link rel="canonical" href="https://adnaan.badr.in/blog/2019/10/21/go-pattern-supervise-multiple-servers/">
+  <link rel="alternate" type="application/rss+xml" href="" title="Time Traveling Gopher">
+  
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
-  <div class="container">
+  <header class="menus">
+  
+  <a href="https://adnaan.badr.in">Time Traveling Gopher</a>
+  
 
-    <nav class="site-nav">
-      <a href="https://adnaan.badr.in">Index</a>
-    </nav>
+  <nav >
+    
+  </nav>
 
+  <nav class="fontawesome">
+    
+    
+  </nav>
+  
+  
+  <div class="hidden description">Time Traveling Gopher</div>
+  
+</header>
 
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">Go Pattern: Supervise Multiple Servers</h1>
-      <time class="post-date" datetime="2019-10-21 09:59:25 CEST">21 Oct 2019</time>
-    </header>
+<article class="article">
+  <header>
+    <h1 style="text-align: center;" >Go Pattern: Supervise Multiple Servers</h1>
 
-    <p>This post describes a simple pattern to supervise multiple http/grpc/tcp servers in a go program.</p>
+    <div class="post-meta">
+    
+      <time datetime="2019-10-21T09:59:25&#43;02:00">October 21, 2019</time> &nbsp; 
+    
 
-<p><strong>Packages Used</strong>: <a href="https://golang.org/pkg/context/">context</a>, <a href="https://godoc.org/golang.org/x/sync/errgroup">errgroup</a>, <a href="https://golang.org/pkg/os">os</a>, <a href="https://golang.org/pkg/os/signal/">os/signal</a></p>
-
-<p>After receiving a termination signal, we wait on multiple servers to shut them down gracefully. This is done using the <code>errgroup</code> package.</p>
-
-<pre><code class="language-bash">$ go run main.go
-2019/10/21 11:55:59 server 2 listening on port 8081
-2019/10/21 11:55:59 server 1 listening on port 8080
-^C2019/10/21 11:56:10 shutting down servers, please wait...
-2019/10/21 11:56:14 a graceful bye
-</code></pre>
-
-<p>To see the delay in shutdown in action, we can mimic a alive open connection by sending a request from the browser i.e. <a href="http://localhost:8080">open http://localhost:8080</a>. A <code>curl</code> connection would terminate immediately and you wouldn&rsquo;t be able to see the shutown delay since there&rsquo;s nothing to cleanup.</p>
-
-<p>And here&rsquo;s the <strong>code</strong>:</p>
-
-<pre><code class="language-go">package main
-
-import (
-	&quot;context&quot;
-	&quot;fmt&quot;
-	&quot;log&quot;
-	&quot;net/http&quot;
-	&quot;os&quot;
-	&quot;os/signal&quot;
-	&quot;syscall&quot;
-	&quot;time&quot;
-
-	&quot;golang.org/x/sync/errgroup&quot;
-)
-
-type helloHandler struct {
-	ctx  context.Context
-	name string
-}
-
-func (h *helloHandler) ServeHTTP(
-	w http.ResponseWriter,
-	r *http.Request,
-) {
-	w.Write([]byte(fmt.Sprintf(&quot;Hello from %s&quot;, h.name)))
-}
-
-func newHelloServer(
-	ctx context.Context,
-	name string,
-	port int,
-) *http.Server {
-
-	mux := http.NewServeMux()
-	handler := &amp;helloHandler{ctx: ctx, name: name}
-	mux.Handle(&quot;/&quot;, handler)
-	httpServer := &amp;http.Server{
-		Addr:    fmt.Sprintf(&quot;:%d&quot;, port),
-		Handler: mux,
-	}
-
-	return httpServer
-}
-
-func main() {
-	// HERE
-	// setup context and signal handling
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-	defer signal.Stop(quit)
-
-	g, ctx := errgroup.WithContext(ctx)
-
-	// start servers
-	server1 := newHelloServer(ctx, &quot;server1&quot;, 8080)
-	g.Go(func() error {
-		log.Println(&quot;server 1 listening on port 8080&quot;)
-		if err := server1.ListenAndServe(); 
-			err != http.ErrServerClosed {
-			return err
-		}
-
-		return nil
-	})
-
-	server2 := newHelloServer(ctx, &quot;server2&quot;, 8081)
-	g.Go(func() error {
-		log.Println(&quot;server 2 listening on port 8081&quot;)
-		if err := server2.ListenAndServe(); 
-			err != http.ErrServerClosed {
-			return err
-		}
-
-		return nil
-	})
-
-	// handle termination
-	select {
-	case &lt;-quit:
-		break
-	case &lt;-ctx.Done():
-		break
-	}
-
-	// gracefully shutdown http servers
-	cancel()
-
-	timeoutCtx, timeoutCancel := context.WithTimeout(
-		context.Background(),
-		10*time.Second,
-	)
-	defer timeoutCancel()
-
-	log.Println(&quot;shutting down servers, please wait...&quot;)
-
-	server1.Shutdown(timeoutCtx)
-	server2.Shutdown(timeoutCtx)
-
-	// AND THIS
-	// wait for shutdown
-	if err := g.Wait(); err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println(&quot;a graceful bye&quot;)
-}
-
-</code></pre>
-
-
-  </article>
-
-<footer class="site-footer">
-  <span itemscope itemtype="http://schema.org/Person">
-    <link itemprop="url" href="https://adnaan.badr.in">
-    <span itemprop="name">Adnaan Badr</span>
-
-    <br>
-
-    <a itemprop="sameAs" href="https://github.com/adnaan" title="GitHub">Github</a>
-
-    <a itemprop="sameAs" href="https://twitter.com/adnaanx" title="Twitter">Twitter</a>
-
-
-    <a itemprop="sameAs" href="https://www.linkedin.com/in/adnaanx"
-      title="LinkedIn">LinkedIn</a>
-
+     &nbsp;
 
     
-  </span>
+    
+    
 
-  
-</footer>
+    
+
+    
+    </div>
+  </header>
+
+   
+
+  <div class="text">
+    <p>This post describes a simple pattern to supervise multiple http/grpc/tcp servers in a go program.</p>
+<p><strong>Packages Used</strong>: <a href="https://golang.org/pkg/context/">context</a>, <a href="https://godoc.org/golang.org/x/sync/errgroup">errgroup</a>, <a href="https://golang.org/pkg/os">os</a>, <a href="https://golang.org/pkg/os/signal/">os/signal</a></p>
+<p>After receiving a termination signal, we wait on multiple servers to shut them down gracefully. This is done using the <code>errgroup</code> package.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go run main.go
+2019/10/21 11:55:59 server <span style="color:#ae81ff">2</span> listening on port <span style="color:#ae81ff">8081</span>
+2019/10/21 11:55:59 server <span style="color:#ae81ff">1</span> listening on port <span style="color:#ae81ff">8080</span>
+^C2019/10/21 11:56:10 shutting down servers, please wait...
+2019/10/21 11:56:14 a graceful bye
+</code></pre></div><p>To see the delay in shutdown in action, we can mimic a alive open connection by sending a request from the browser i.e. <a href="http://localhost:8080">open http://localhost:8080</a>. A <code>curl</code> connection would terminate immediately and you wouldn&rsquo;t be able to see the shutown delay since there&rsquo;s nothing to cleanup.</p>
+<p>And here&rsquo;s the <strong>code</strong>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;context&#34;</span>
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;log&#34;</span>
+	<span style="color:#e6db74">&#34;net/http&#34;</span>
+	<span style="color:#e6db74">&#34;os&#34;</span>
+	<span style="color:#e6db74">&#34;os/signal&#34;</span>
+	<span style="color:#e6db74">&#34;syscall&#34;</span>
+	<span style="color:#e6db74">&#34;time&#34;</span>
+
+	<span style="color:#e6db74">&#34;golang.org/x/sync/errgroup&#34;</span>
+)
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">helloHandler</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">ctx</span>  <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>
+	<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">h</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">helloHandler</span>) <span style="color:#a6e22e">ServeHTTP</span>(
+	<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>,
+	<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>,
+) {
+	<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>([]byte(<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;Hello from %s&#34;</span>, <span style="color:#a6e22e">h</span>.<span style="color:#a6e22e">name</span>)))
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newHelloServer</span>(
+	<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Context</span>,
+	<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>,
+	<span style="color:#a6e22e">port</span> <span style="color:#66d9ef">int</span>,
+) <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Server</span> {
+
+	<span style="color:#a6e22e">mux</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">NewServeMux</span>()
+	<span style="color:#a6e22e">handler</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">helloHandler</span>{<span style="color:#a6e22e">ctx</span>: <span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">name</span>: <span style="color:#a6e22e">name</span>}
+	<span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#a6e22e">handler</span>)
+	<span style="color:#a6e22e">httpServer</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Server</span>{
+		<span style="color:#a6e22e">Addr</span>:    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;:%d&#34;</span>, <span style="color:#a6e22e">port</span>),
+		<span style="color:#a6e22e">Handler</span>: <span style="color:#a6e22e">mux</span>,
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">httpServer</span>
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#75715e">// HERE
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// setup context and signal handling
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">ctx</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()
+	<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">cancel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">WithCancel</span>(<span style="color:#a6e22e">ctx</span>)
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">cancel</span>()
+
+	<span style="color:#a6e22e">quit</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Signal</span>, <span style="color:#ae81ff">1</span>)
+	<span style="color:#a6e22e">signal</span>.<span style="color:#a6e22e">Notify</span>(<span style="color:#a6e22e">quit</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Interrupt</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">SIGTERM</span>)
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">signal</span>.<span style="color:#a6e22e">Stop</span>(<span style="color:#a6e22e">quit</span>)
+
+	<span style="color:#a6e22e">g</span>, <span style="color:#a6e22e">ctx</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">errgroup</span>.<span style="color:#a6e22e">WithContext</span>(<span style="color:#a6e22e">ctx</span>)
+
+	<span style="color:#75715e">// start servers
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">server1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newHelloServer</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;server1&#34;</span>, <span style="color:#ae81ff">8080</span>)
+	<span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">error</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;server 1 listening on port 8080&#34;</span>)
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">server1</span>.<span style="color:#a6e22e">ListenAndServe</span>(); 
+			<span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ErrServerClosed</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+		}
+
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+	})
+
+	<span style="color:#a6e22e">server2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newHelloServer</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;server2&#34;</span>, <span style="color:#ae81ff">8081</span>)
+	<span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">error</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;server 2 listening on port 8081&#34;</span>)
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">server2</span>.<span style="color:#a6e22e">ListenAndServe</span>(); 
+			<span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ErrServerClosed</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+		}
+
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+	})
+
+	<span style="color:#75715e">// handle termination
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">select</span> {
+	<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">quit</span>:
+		<span style="color:#66d9ef">break</span>
+	<span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">Done</span>():
+		<span style="color:#66d9ef">break</span>
+	}
+
+	<span style="color:#75715e">// gracefully shutdown http servers
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">cancel</span>()
+
+	<span style="color:#a6e22e">timeoutCtx</span>, <span style="color:#a6e22e">timeoutCancel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">WithTimeout</span>(
+		<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(),
+		<span style="color:#ae81ff">10</span><span style="color:#f92672">*</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>,
+	)
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">timeoutCancel</span>()
+
+	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;shutting down servers, please wait...&#34;</span>)
+
+	<span style="color:#a6e22e">server1</span>.<span style="color:#a6e22e">Shutdown</span>(<span style="color:#a6e22e">timeoutCtx</span>)
+	<span style="color:#a6e22e">server2</span>.<span style="color:#a6e22e">Shutdown</span>(<span style="color:#a6e22e">timeoutCtx</span>)
+
+	<span style="color:#75715e">// AND THIS
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// wait for shutdown
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">Wait</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+
+	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;a graceful bye&#34;</span>)
+}
+
+</code></pre></div>
+  </div>
+
+  <footer>
+    <hr class="end-line">
+
+    
+
+    
+
+    
+    
+  </footer>
+
+  <div class="comments">
+
+
+
 </div>
 
-<script src="/js/highlight.pack.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+</article>
+
 
 </body>
+<div class="foot">
+  
+  
+
+  
+</div>
+
+
 
 </html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.79.0" />
+
+  <title> Go Trick: Vendoring Non-Package Directory |  Time Traveling Gopher</title>
+  <meta name="description" content="Time Traveling Gopher">
+  <link rel="stylesheet" href="https://adnaan.badr.incss/simpleness.css">
+  <link rel="canonical" href="https://adnaan.badr.in/blog/2020/03/13/go-trick-vendoring-non-package-directory/">
+  <link rel="alternate" type="application/rss+xml" href="" title="Time Traveling Gopher">
+  
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header class="menus">
+  
+  <a href="https://adnaan.badr.in">Time Traveling Gopher</a>
+  
+
+  <nav >
+    
+  </nav>
+
+  <nav class="fontawesome">
+    
+    
+  </nav>
+  
+  
+  <div class="hidden description">Time Traveling Gopher</div>
+  
+</header>
+
+<article class="article">
+  <header>
+    <h1 style="text-align: center;" >Go Trick: Vendoring Non-Package Directory</h1>
+
+    <div class="post-meta">
+    
+      <time datetime="2020-03-13T11:45:12&#43;01:00">March 13, 2020</time> &nbsp; 
+    
+
+     &nbsp;
+
+    
+    
+    
+
+    
+
+    
+    </div>
+  </header>
+
+   
+
+  <div class="text">
+    <p>After go version <code>1.13+</code>, <code>go mod -vendor</code> prunes non-package directories from <code>vendor</code>. This is noted here:
+<a href="https://github.com/golang/go/issues/26366">https://github.com/golang/go/issues/26366</a></p>
+<p>So, how do we include a non-package directory(sql migrations, yamls etc.) to be included in the vendor ?</p>
+<p><code>Example directory</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">migrations
+    create_table.sql.up
+    create_table.sql.down
+    migrations.go
+</code></pre></div><p><code>migrations.go</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// +build migrations
+</span><span style="color:#75715e"></span><span style="color:#f92672">package</span> <span style="color:#a6e22e">migrations</span>
+</code></pre></div><p>The conditionally compiled file <code>migrations.go</code> will force <code>go mod -vendor</code> to include it.</p>
+
+  </div>
+
+  <footer>
+    <hr class="end-line">
+
+    
+
+    
+
+    
+    
+  </footer>
+
+  <div class="comments">
+
+
+
+</div>
+
+</article>
+
+
+</body>
+<div class="foot">
+  
+  
+
+  
+</div>
+
+
+
+</html>

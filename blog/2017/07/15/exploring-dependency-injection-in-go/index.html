@@ -1,93 +1,103 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Hugo 0.58.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.79.0" />
 
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="Adnaan Badr">
-  <meta property="og:url" content="https://adnaan.badr.in/blog/2017/07/15/exploring-dependency-injection-in-go/">
-
-  <title>Exploring Dependency Injection in Go - Time Traveling Gopher</title>
-  <meta property="og:title" content="Exploring Dependency Injection in Go - Time Traveling Gopher">
-  <meta property="og:type" content="article">
-  <meta name="description" content="">
-
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Arvo:400,700">
-  <link rel="stylesheet" href="/css/highlight.css">
-  <link rel="stylesheet" href="/css/journal.css">
-  <link href="/index.xml" rel="alternate" type="application/rss+xml" title="Time Traveling Gopher">
-
+  <title> Exploring Dependency Injection in Go |  Time Traveling Gopher</title>
+  <meta name="description" content="Time Traveling Gopher">
+  <link rel="stylesheet" href="https://adnaan.badr.incss/simpleness.css">
+  <link rel="canonical" href="https://adnaan.badr.in/blog/2017/07/15/exploring-dependency-injection-in-go/">
+  <link rel="alternate" type="application/rss+xml" href="" title="Time Traveling Gopher">
+  
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
-  <div class="container">
+  <header class="menus">
+  
+  <a href="https://adnaan.badr.in">Time Traveling Gopher</a>
+  
 
-    <nav class="site-nav">
-      <a href="https://adnaan.badr.in">Index</a>
-    </nav>
+  <nav >
+    
+  </nav>
 
+  <nav class="fontawesome">
+    
+    
+  </nav>
+  
+  
+  <div class="hidden description">Time Traveling Gopher</div>
+  
+</header>
 
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">Exploring Dependency Injection in Go</h1>
-      <time class="post-date" datetime="2017-07-15 03:42:44 UTC">15 Jul 2017</time>
-    </header>
+<article class="article">
+  <header>
+    <h1 style="text-align: center;" >Exploring Dependency Injection in Go</h1>
+
+    <div class="post-meta">
+    
+      <time datetime="2017-07-15T03:42:44Z">July 15, 2017</time> &nbsp; 
+    
+
+     &nbsp;
+
+    
+    
+    
 
     
 
-<h2 id="introduction">Introduction</h2>
+    
+    </div>
+  </header>
 
+   
+
+  <div class="text">
+    <h2 id="introduction">Introduction</h2>
 <p>There is a lot of material available about the pros and cons of Dependency Injection. This post is less about the pattern itself and more about its implementation design and it&rsquo;s side-effects w.r.t <code>Go</code>. Let&rsquo;s setup a context for <code>Go</code> users : As a clean programming practice, the theory of dependency injection is quite simple across several languages:</p>
-
 <blockquote>
 <p>A dependency is passed to an object as an argument rather than the object creating or finding it.</p>
 </blockquote>
-
 <p>It plainly means that the dependencies of an object are passed to it as it’s initial state. This is in contrast with using globals as dependencies wherein the same global resource is shared across multiple objects. It also means the object doesn&rsquo;t self-initialize its dependencies.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Using a global dependency in PostService
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">userService</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Service</span>
 
-<pre><code class="language-go">// Using a global dependency in PostService
-
-var userService user.Service
-
-func Init() {
-  userService = user.NewService()
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Init</span>() {
+  <span style="color:#a6e22e">userService</span> = <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">NewService</span>()
 }
 
-func GetComments() []Comment {
-  var comments []Comment
-  comments = append(comments, userService.GetComments())
-  return comments
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">GetComments</span>() []<span style="color:#a6e22e">Comment</span> {
+  <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">comments</span> []<span style="color:#a6e22e">Comment</span>
+  <span style="color:#a6e22e">comments</span> = append(<span style="color:#a6e22e">comments</span>, <span style="color:#a6e22e">userService</span>.<span style="color:#a6e22e">GetComments</span>())
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">comments</span>
 }
 
-</code></pre>
-
-<p>Instead <code>PostService</code> could explicitly depend on the <code>user.Service</code> resource. While initializing the <code>PostService</code> object, we would be <code>injecting</code> it&rsquo;s dependencies.</p>
-
-<pre><code class="language-go">// Using dependency injection
-
-type PostService struct {
-  UserService user.Service
+</code></pre></div><p>Instead <code>PostService</code> could explicitly depend on the <code>user.Service</code> resource. While initializing the <code>PostService</code> object, we would be <code>injecting</code> it&rsquo;s dependencies.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Using dependency injection
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">PostService</span> <span style="color:#66d9ef">struct</span> {
+  <span style="color:#a6e22e">UserService</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Service</span>
 }
 
-func (p *PostService) GetComments() []Comment {
-  var comments []Comment
-  comments = append(comments, p.UserService.GetComments())
-  return comments
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">PostService</span>) <span style="color:#a6e22e">GetComments</span>() []<span style="color:#a6e22e">Comment</span> {
+  <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">comments</span> []<span style="color:#a6e22e">Comment</span>
+  <span style="color:#a6e22e">comments</span> = append(<span style="color:#a6e22e">comments</span>, <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">UserService</span>.<span style="color:#a6e22e">GetComments</span>())
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">comments</span>
 }
 
-func main(){
-  postService := &amp;PostService{UserService:user.NewService()
-  ...
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>(){
+  <span style="color:#a6e22e">postService</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">PostService</span>{<span style="color:#a6e22e">UserService</span>:<span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">NewService</span>()
+  <span style="color:#f92672">...</span>
 }
-</code></pre>
-
-<h2 id="designing-for-dependency-injection">Designing for Dependency Injection</h2>
-
+</code></pre></div><h2 id="designing-for-dependency-injection">Designing for Dependency Injection</h2>
 <h3 id="goals">Goals</h3>
-
 <ol>
 <li>No Global State: No package level variables, no package level func init. Refer: <a href="https://peter.bourgon.org/blog/2017/06/09/theory-of-modern-go.html">theory of modern go</a></li>
 <li>Support Multi-Mode Services: Configure a service to enable/disable capabilities.</li>
@@ -95,316 +105,271 @@ func main(){
 <li>Better Refractor-ability: Design for code refractors.</li>
 <li>Better Readability: Explicit and readable dependency graph.</li>
 </ol>
-
 <p>First, let&rsquo;s look at a more involved example :</p>
-
-<pre><code class="language-go">
-func main(){
-  asClient := aerospike.NewClient(...)
-  kafkaProducer := sarama.NewAsyncProducer(...)
-  authService := auth.Service{
-    Key: &quot;xxx&quot;,
-    Host: &quot;jjj&quot;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>(){
+  <span style="color:#a6e22e">asClient</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">aerospike</span>.<span style="color:#a6e22e">NewClient</span>(<span style="color:#f92672">...</span>)
+  <span style="color:#a6e22e">kafkaProducer</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sarama</span>.<span style="color:#a6e22e">NewAsyncProducer</span>(<span style="color:#f92672">...</span>)
+  <span style="color:#a6e22e">authService</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">auth</span>.<span style="color:#a6e22e">Service</span>{
+    <span style="color:#a6e22e">Key</span>: <span style="color:#e6db74">&#34;xxx&#34;</span>,
+    <span style="color:#a6e22e">Host</span>: <span style="color:#e6db74">&#34;jjj&#34;</span>
   }
 
-  ... // more services
+  <span style="color:#f92672">...</span> <span style="color:#75715e">// more services
+</span><span style="color:#75715e"></span>
+  <span style="color:#a6e22e">userService</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Service</span>{
+    <span style="color:#a6e22e">AsClient</span> : <span style="color:#a6e22e">asClient</span>,
+    <span style="color:#a6e22e">KafkaProducer</span>: <span style="color:#a6e22e">kafkaProducer</span>,
+    <span style="color:#a6e22e">AuthService</span>: <span style="color:#a6e22e">authService</span>
+    <span style="color:#f92672">...</span> <span style="color:#75715e">// more dependencies
+</span><span style="color:#75715e"></span>  }
 
-  userService := user.Service{
-    AsClient : asClient,
-    KafkaProducer: kafkaProducer,
-    AuthService: authService
-    ... // more dependencies
+  <span style="color:#a6e22e">authService2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">auth</span>.<span style="color:#a6e22e">Service</span> {
+    <span style="color:#a6e22e">Key</span>: <span style="color:#e6db74">&#34;yyy&#34;</span>,
+    <span style="color:#a6e22e">Host</span>: <span style="color:#e6db74">&#34;kkk&#34;</span>
   }
-
-  authService2 := auth.Service {
-    Key: &quot;yyy&quot;,
-    Host: &quot;kkk&quot;
-  }
-  userServiceLimitedAccess := user.Service{
-    AsClient : asClient,
-    KafkaProducer: kafkaProducer,
-    AuthService: authService2
-    ... // less dependencies
-  }
+  <span style="color:#a6e22e">userServiceLimitedAccess</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Service</span>{
+    <span style="color:#a6e22e">AsClient</span> : <span style="color:#a6e22e">asClient</span>,
+    <span style="color:#a6e22e">KafkaProducer</span>: <span style="color:#a6e22e">kafkaProducer</span>,
+    <span style="color:#a6e22e">AuthService</span>: <span style="color:#a6e22e">authService2</span>
+    <span style="color:#f92672">...</span> <span style="color:#75715e">// less dependencies
+</span><span style="color:#75715e"></span>  }
 
 }
-</code></pre>
-
-<p>Though the concept of DI itself is simple, it takes a bit of premeditated design to avoid a convoluted injection code. In the above example, where <code>user.Service</code> has multiple modes, the struct <code>user.Service{...}</code> initialization does not make clear what dependents where required to make that happen. One can imagine this initialization pattern to get even more messy with changing requirements. Service usability and behavior could change based on:</p>
-
+</code></pre></div><p>Though the concept of DI itself is simple, it takes a bit of premeditated design to avoid a convoluted injection code. In the above example, where <code>user.Service</code> has multiple modes, the struct <code>user.Service{...}</code> initialization does not make clear what dependents where required to make that happen. One can imagine this initialization pattern to get even more messy with changing requirements. Service usability and behavior could change based on:</p>
 <ol>
 <li>The service has multiple modes or capabilities. e.g: <code>limitedaccess</code>, <code>maintenance</code> , <code>readonly</code> etc.</li>
 <li>The service has a commonly used <code>default</code> mode.</li>
 <li>The service adds/removes dependencies over time(i.e capabilities).</li>
 </ol>
-
 <p>The following conventions could be adopted to leverage the power of DI while side-stepping <code>a few</code> of it&rsquo;s pitfalls:</p>
-
-<h4 id="1-use-interfaces"><strong><em>1. Use interfaces</em></strong></h4>
-
+<h4 id="_1-use-interfaces_"><strong><em>1. Use interfaces</em></strong></h4>
 <p>To support multi-mode services(with a general <code>default</code> mode), declaring interfaces is the way to go. Declaring interfaces allows us to have multiple implementations of the same service. When used as a dependency, clients don&rsquo;t need to change the contract when a different mode of the service is passed.This is also regularly useful for testing .</p>
-
-<pre><code class="language-go">type AppHandler struct {
-  UserService user.Service
-  // ... more services.
-}
-</code></pre>
-
-<p>Here, <code>AppHandler</code> will accept any service(mode) which satisfies the <code>user.Service</code> interface. We will see how it&rsquo;s done, further ahead.</p>
-
-<h4 id="2-prefer-construction-over-initialization"><strong><em>2. Prefer construction over initialization</em></strong></h4>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">AppHandler</span> <span style="color:#66d9ef">struct</span> {
+  <span style="color:#a6e22e">UserService</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Service</span>
+  <span style="color:#75715e">// ... more services.
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>Here, <code>AppHandler</code> will accept any service(mode) which satisfies the <code>user.Service</code> interface. We will see how it&rsquo;s done, further ahead.</p>
+<h4 id="_2-prefer-construction-over-initialization_"><strong><em>2. Prefer construction over initialization</em></strong></h4>
 <p>In the previous example, we used struct initializers to inject dependencies. While this is good enough for a few dependencies, it gets hard to manage them once the service starts adding new capabilities. It also reduces readability and requires prior implicit knowledge of the dependencies of a service. Moreover, initializing a service using <code>user.Service{}</code> limits our ability to enable/disable and extend service capabilities. I would recommend <code>constructor functions</code> over <code>struct initializers</code> to eliminate these problems. Let&rsquo;s see. Possible approaches to construct a service object using functions:</p>
-
 <ol>
 <li><code>New</code>. e.g: <code>NewReadOnlyService(...)</code>, <code>NewPrivilegedService(...)</code></li>
 <li><code>Config</code> : <code>type Config struct{}...</code>. <code>NewService(c *Config)</code>. <code>NewService(nil)</code> <code>nil</code> would mean a default <code>Config</code></li>
 <li>Variadic <code>Config</code>. <code>NewService(c ...Config)</code>.</li>
 <li>Functional Options: <code>NewService(options ...func(Service)</code></li>
 </ol>
-
 <p>The above ideas have been sourced from the excellent post by Dave Cheney. Would highly recommend a nice, slow read: <a href="https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis.">https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis.</a> Actually I will be right here, while you do that. The <code>functional options</code> pattern is reasonable enough. But still doesn&rsquo;t scale if you have a large number of dependencies and multiple modes. Consider the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// using the functional option pattern
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">myUserService</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">NewService</span>(
+  <span style="color:#a6e22e">msession</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mgo</span>.<span style="color:#a6e22e">Session</span>,
+  <span style="color:#f92672">...</span>, <span style="color:#75715e">// more default dependencies
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">PrivilegedMode</span>(<span style="color:#a6e22e">redisPool</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">redis</span>.<span style="color:#a6e22e">Pool</span>),
+  <span style="color:#f92672">...</span>, <span style="color:#75715e">// more modes
+</span><span style="color:#75715e"></span>  )
 
-<pre><code class="language-go">// using the functional option pattern
-myUserService := user.NewService(
-  msession *mgo.Session,
-  ..., // more default dependencies
-  user.PrivilegedMode(redisPool *redis.Pool),
-  ..., // more modes
-  )
-
-// or
-
-myUserService := user.NewService(
-  user.DefaultMode(msession,...,),// more default dependencies
-  user.PrivilegedMode(redisPool),
-  ..., // more modes
-  )
-</code></pre>
-
-<p>We end up with a situation where again, there are many arguments passed into the <code>New</code> function. Also it doesn&rsquo;t make a lot of sense to have to declare <code>default</code> behavior as a mode. Ideally, for a service we would want a <code>default</code> behavior which we can override to create a new mode.</p>
-
+<span style="color:#75715e">// or
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">myUserService</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">NewService</span>(
+  <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">DefaultMode</span>(<span style="color:#a6e22e">msession</span>,<span style="color:#f92672">...</span>,),<span style="color:#75715e">// more default dependencies
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">PrivilegedMode</span>(<span style="color:#a6e22e">redisPool</span>),
+  <span style="color:#f92672">...</span>, <span style="color:#75715e">// more modes
+</span><span style="color:#75715e"></span>  )
+</code></pre></div><p>We end up with a situation where again, there are many arguments passed into the <code>New</code> function. Also it doesn&rsquo;t make a lot of sense to have to declare <code>default</code> behavior as a mode. Ideally, for a service we would want a <code>default</code> behavior which we can override to create a new mode.</p>
 <h4 id="functional-config-options">Functional Config Options</h4>
-
 <p>So, instead we use a combo of <code>functional options</code> and <code>Config</code> patterns to get around this complexity.</p>
-
-<pre><code class="language-go">// NewService configures the service
-func NewService(defaultConfig Config, configOptions ...func(*Config)) Service {
-  for _, option := range configOptions {
-    option(&amp;defaultConfig)
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// NewService configures the service
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewService</span>(<span style="color:#a6e22e">defaultConfig</span> <span style="color:#a6e22e">Config</span>, <span style="color:#a6e22e">configOptions</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">Config</span>)) <span style="color:#a6e22e">Service</span> {
+  <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">option</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">configOptions</span> {
+    <span style="color:#a6e22e">option</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">defaultConfig</span>)
   }
-  return &amp;service{c: &amp;defaultConfig}
+  <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">service</span>{<span style="color:#a6e22e">c</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">defaultConfig</span>}
 }
-</code></pre>
+</code></pre></div><p>Note that we didn&rsquo;t pass <code>*Config</code> as <code>defaultConfig</code> as we wouldn&rsquo;t want the caller to hold the reference to it. Additional attributes/overrides to the <code>defaultConfig</code> is done via <code>configOptions</code>. The following snippets of code condenses the ideas we have talked about:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// user/user.go
+</span><span style="color:#75715e"></span><span style="color:#f92672">package</span> <span style="color:#a6e22e">user</span>
 
-<p>Note that we didn&rsquo;t pass <code>*Config</code> as <code>defaultConfig</code> as we wouldn&rsquo;t want the caller to hold the reference to it. Additional attributes/overrides to the <code>defaultConfig</code> is done via <code>configOptions</code>. The following snippets of code condenses the ideas we have talked about:</p>
+<span style="color:#f92672">import</span> (
+  <span style="color:#e6db74">&#34;fmt&#34;</span>
 
-<pre><code class="language-go">// user/user.go
-package user
-
-import (
-  &quot;fmt&quot;
-
-  &quot;github.com/garyburd/redigo/redis&quot;
-  mgo &quot;gopkg.in/mgo.v2&quot;
+  <span style="color:#e6db74">&#34;github.com/garyburd/redigo/redis&#34;</span>
+  <span style="color:#a6e22e">mgo</span> <span style="color:#e6db74">&#34;gopkg.in/mgo.v2&#34;</span>
 )
 
-// Service interface
-type Service interface {
-// invoked from a http request and returns the role of the user.
-  HandleGetRoleRequest(uid string) string
-  HandleGetAccessKey(uid string) (string, error)
+<span style="color:#75715e">// Service interface
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Service</span> <span style="color:#66d9ef">interface</span> {
+<span style="color:#75715e">// invoked from a http request and returns the role of the user.
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">HandleGetRoleRequest</span>(<span style="color:#a6e22e">uid</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span>
+  <span style="color:#a6e22e">HandleGetAccessKey</span>(<span style="color:#a6e22e">uid</span> <span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>)
 }
 
-// Config for the service
-  type Config struct {
-  RedisPool *redis.Pool
-  Msession *mgo.Session
+<span style="color:#75715e">// Config for the service
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Config</span> <span style="color:#66d9ef">struct</span> {
+  <span style="color:#a6e22e">RedisPool</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">redis</span>.<span style="color:#a6e22e">Pool</span>
+  <span style="color:#a6e22e">Msession</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mgo</span>.<span style="color:#a6e22e">Session</span>
 }
 
-// configurable service which implements the Service interface
-type service struct {
-  c *Config
+<span style="color:#75715e">// configurable service which implements the Service interface
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">service</span> <span style="color:#66d9ef">struct</span> {
+  <span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Config</span>
 }
 
-func (s *service) HandleGetRoleRequest(uid string) string {
-  return getRole(s.c.Msession.Copy(), uid)
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">service</span>) <span style="color:#a6e22e">HandleGetRoleRequest</span>(<span style="color:#a6e22e">uid</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">getRole</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Msession</span>.<span style="color:#a6e22e">Copy</span>(), <span style="color:#a6e22e">uid</span>)
 }
 
-func (s *service) HandleGetAccessKey(uid string) (string, error) {
-  if s.c.RedisPool == nil {
-    return &quot;&quot;, fmt.Errorf(&quot;redis pool is not initalized&quot;)
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">service</span>) <span style="color:#a6e22e">HandleGetAccessKey</span>(<span style="color:#a6e22e">uid</span> <span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
+  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">RedisPool</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;redis pool is not initalized&#34;</span>)
   }
-  return getAccessKey(s.c.RedisPool.Get(), uid)
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">getAccessKey</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">RedisPool</span>.<span style="color:#a6e22e">Get</span>(), <span style="color:#a6e22e">uid</span>)
  }
 
-// NewService configures the service
-func NewService(defaultConfig Config, configOptions ...func(*Config)) Service {
-  for _, option := range configOptions {
-    option(&amp;defaultConfig)
+<span style="color:#75715e">// NewService configures the service
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewService</span>(<span style="color:#a6e22e">defaultConfig</span> <span style="color:#a6e22e">Config</span>, <span style="color:#a6e22e">configOptions</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">Config</span>)) <span style="color:#a6e22e">Service</span> {
+  <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">option</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">configOptions</span> {
+    <span style="color:#a6e22e">option</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">defaultConfig</span>)
   }
-  return &amp;service{c: &amp;defaultConfig}
+  <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">service</span>{<span style="color:#a6e22e">c</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">defaultConfig</span>}
 }
 
-func PrivilegedMode(RedisPool *redis.Pool) func(*Config) {
-  return func(c *Config) {
-    c.RedisPool = RedisPool
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">PrivilegedMode</span>(<span style="color:#a6e22e">RedisPool</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">redis</span>.<span style="color:#a6e22e">Pool</span>) <span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">Config</span>) {
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Config</span>) {
+    <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">RedisPool</span> = <span style="color:#a6e22e">RedisPool</span>
   }
 }
 
-func getRole(session *mgo.Session, uid string) string {
-  defer session.Close()
-  // fetch role
-  return &quot;admin&quot;
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getRole</span>(<span style="color:#a6e22e">session</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mgo</span>.<span style="color:#a6e22e">Session</span>, <span style="color:#a6e22e">uid</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+  <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">Close</span>()
+  <span style="color:#75715e">// fetch role
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;admin&#34;</span>
 }
 
-func getAccessKey(conn redis.Conn, uid string) (string, error) {
-  defer conn.Close()
-  //fetch accesskey
-  return &quot;xyz123&quot;, nil
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getAccessKey</span>(<span style="color:#a6e22e">conn</span> <span style="color:#a6e22e">redis</span>.<span style="color:#a6e22e">Conn</span>, <span style="color:#a6e22e">uid</span> <span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
+  <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">conn</span>.<span style="color:#a6e22e">Close</span>()
+  <span style="color:#75715e">//fetch accesskey
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;xyz123&#34;</span>, <span style="color:#66d9ef">nil</span>
 }
-</code></pre>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//main.go
+</span><span style="color:#75715e"></span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">//main.go
-package main
-
-import (
-  &quot;github.com/adnaan/talks/dependency_injection_july2017/user&quot;
-  &quot;github.com/garyburd/redigo/redis&quot;
-  &quot;gopkg.in/mgo.v2&quot;
+<span style="color:#f92672">import</span> (
+  <span style="color:#e6db74">&#34;github.com/adnaan/talks/dependency_injection_july2017/user&#34;</span>
+  <span style="color:#e6db74">&#34;github.com/garyburd/redigo/redis&#34;</span>
+  <span style="color:#e6db74">&#34;gopkg.in/mgo.v2&#34;</span>
 )
 
-type AppHandler struct {
-  UserService user.Service
-  // ... more services.
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">AppHandler</span> <span style="color:#66d9ef">struct</span> {
+  <span style="color:#a6e22e">UserService</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Service</span>
+  <span style="color:#75715e">// ... more services.
+</span><span style="color:#75715e"></span>}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+  <span style="color:#a6e22e">msession</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">mgo</span>.<span style="color:#a6e22e">Session</span>{} <span style="color:#75715e">//dummy
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">defaultConfig</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Config</span>{<span style="color:#a6e22e">Msession</span>: <span style="color:#a6e22e">msession</span>}
+  <span style="color:#a6e22e">redisPool</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">redis</span>.<span style="color:#a6e22e">Pool</span>{} <span style="color:#75715e">//dummy
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">myUserService</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">NewService</span>(<span style="color:#a6e22e">defaultConfig</span>)
+  <span style="color:#75715e">// override default behavior
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">myPrivilegedUserService</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">NewService</span>(<span style="color:#a6e22e">defaultConfig</span>, <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">PrivilegedMode</span>(<span style="color:#a6e22e">redisPool</span>))
+  <span style="color:#a6e22e">appHandler</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">AppHandler</span>{<span style="color:#a6e22e">UserService</span>: <span style="color:#a6e22e">myUserService</span>}
+  <span style="color:#a6e22e">appHandler2</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">AppHandler</span>{<span style="color:#a6e22e">UserService</span>: <span style="color:#a6e22e">myPrivilegedUserService</span>}
+
+  <span style="color:#75715e">// If necessary implement functional config options for AppHandler too
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// ...
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// register appHandler to the http server.
+</span><span style="color:#75715e"></span>
 }
-
-func main() {
-  msession := &amp;mgo.Session{} //dummy
-  defaultConfig := &amp;user.Config{Msession: msession}
-  redisPool := &amp;redis.Pool{} //dummy
-  myUserService := user.NewService(defaultConfig)
-  // override default behavior
-  myPrivilegedUserService := user.NewService(defaultConfig, user.PrivilegedMode(redisPool))
-  appHandler := &amp;AppHandler{UserService: myUserService}
-  appHandler2 := &amp;AppHandler{UserService: myPrivilegedUserService}
-
-  // If necessary implement functional config options for AppHandler too
-  // ...
-  // register appHandler to the http server.
-
-}
-</code></pre>
-
-<h2 id="testing-mocking">Testing/Mocking</h2>
-
+</code></pre></div><h2 id="testingmocking">Testing/Mocking</h2>
 <p>Easier testing/mocking is a benefit which just falls out of implementing the dependency injection pattern. Since we already have a <code>Service</code> interface, writing a mock implementation is a no-brainer. Our test code would now look something like this.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//user/mock/user.go
+</span><span style="color:#75715e"></span><span style="color:#f92672">package</span> <span style="color:#a6e22e">mock</span>
 
-<pre><code class="language-go">//user/mock/user.go
-package mock
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;github.com/adnaan/talks/dependency_injection_july2017/user&#34;</span>
 
-import &quot;github.com/adnaan/talks/dependency_injection_july2017/user&quot;
-
-// configurable service which implements the Service interface
-type service struct {
-  c *user.Config
+<span style="color:#75715e">// configurable service which implements the Service interface
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">service</span> <span style="color:#66d9ef">struct</span> {
+  <span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Config</span>
 }
 
-// NewService configures the service
-func NewService(defaultConfig user.Config, configOptions ...func(*user.Config))       user.Service {
-  for _, option := range configOptions {
-    option(&amp;defaultConfig)
+<span style="color:#75715e">// NewService configures the service
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewService</span>(<span style="color:#a6e22e">defaultConfig</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Config</span>, <span style="color:#a6e22e">configOptions</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Config</span>))       <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Service</span> {
+  <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">option</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">configOptions</span> {
+    <span style="color:#a6e22e">option</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">defaultConfig</span>)
   }
-return &amp;service{c: &amp;defaultConfig}
+<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">service</span>{<span style="color:#a6e22e">c</span>: <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">defaultConfig</span>}
 }
-...
-</code></pre>
+<span style="color:#f92672">...</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// main_test.go
+</span><span style="color:#75715e"></span>
+<span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">// main_test.go
+<span style="color:#f92672">import</span> (
+<span style="color:#e6db74">&#34;testing&#34;</span>
 
-package main
-
-import (
-&quot;testing&quot;
-
-&quot;github.com/adnaan/talks/dependency_injection_july2017/user/mock&quot;
+<span style="color:#e6db74">&#34;github.com/adnaan/talks/dependency_injection_july2017/user/mock&#34;</span>
 )
 
-func TestService(t *testing.T) {
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestService</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
 
-  mockService := mock.NewService(mockConfig)
+  <span style="color:#a6e22e">mockService</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">mock</span>.<span style="color:#a6e22e">NewService</span>(<span style="color:#a6e22e">mockConfig</span>)
 }
-...
-</code></pre>
-
-<h2 id="refactoring-code">Refactoring Code</h2>
-
+<span style="color:#f92672">...</span>
+</code></pre></div><h2 id="refactoring-code">Refactoring Code</h2>
 <p>A sorted out dependency graph makes splitting our code into new services trivial.</p>
-
-<pre><code class="language-go">//service1/main.go
-msession := &amp;mgo.Session{} //dummy
-defaultConfig := user.Config{Msession: msession}
-redisPool := &amp;redis.Pool{} //dummy
-myUserService := user.NewService(defaultConfig)
-appHandler := &amp;AppHandler{UserService: myUserService}
-...
-</code></pre>
-
-<pre><code class="language-go">//service2/main.go
-msession := &amp;mgo.Session{} //dummy
-defaultConfig := user.Config{Msession: msession}
-redisPool := &amp;redis.Pool{} //dummy
-myPrivilegedUserService := user.NewService(defaultConfig, user.PrivilegedMode(redisPool))
-appHandler := &amp;AppHandler{UserService: myPrivilegedUserService}
-...
-</code></pre>
-
-<h2 id="dependency-graph-builders">Dependency Graph Builders</h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//service1/main.go
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">msession</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">mgo</span>.<span style="color:#a6e22e">Session</span>{} <span style="color:#75715e">//dummy
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">defaultConfig</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Config</span>{<span style="color:#a6e22e">Msession</span>: <span style="color:#a6e22e">msession</span>}
+<span style="color:#a6e22e">redisPool</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">redis</span>.<span style="color:#a6e22e">Pool</span>{} <span style="color:#75715e">//dummy
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">myUserService</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">NewService</span>(<span style="color:#a6e22e">defaultConfig</span>)
+<span style="color:#a6e22e">appHandler</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">AppHandler</span>{<span style="color:#a6e22e">UserService</span>: <span style="color:#a6e22e">myUserService</span>}
+<span style="color:#f92672">...</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//service2/main.go
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">msession</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">mgo</span>.<span style="color:#a6e22e">Session</span>{} <span style="color:#75715e">//dummy
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">defaultConfig</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">Config</span>{<span style="color:#a6e22e">Msession</span>: <span style="color:#a6e22e">msession</span>}
+<span style="color:#a6e22e">redisPool</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">redis</span>.<span style="color:#a6e22e">Pool</span>{} <span style="color:#75715e">//dummy
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">myPrivilegedUserService</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">NewService</span>(<span style="color:#a6e22e">defaultConfig</span>, <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">PrivilegedMode</span>(<span style="color:#a6e22e">redisPool</span>))
+<span style="color:#a6e22e">appHandler</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">AppHandler</span>{<span style="color:#a6e22e">UserService</span>: <span style="color:#a6e22e">myPrivilegedUserService</span>}
+<span style="color:#f92672">...</span>
+</code></pre></div><h2 id="dependency-graph-builders">Dependency Graph Builders</h2>
 <p>There are various other ways to build a sensible dependency graph. Packages like <a href="https://github.com/facebookgo/inject">facebookgo/inject</a>, <a href="https://github.com/codegangsta/inject">codegangsta/inject</a> are available to help. Unfortunately, I haven&rsquo;t tried them yet.</p>
-
 <h2 id="takeaway">Takeaway</h2>
-
 <p>Here is a tl;dr for the reader:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">Pass</span> <span style="color:#a6e22e">dependencies</span> <span style="color:#a6e22e">to</span> <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">service</span> <span style="color:#a6e22e">implementation</span> <span style="color:#a6e22e">as</span> <span style="color:#a6e22e">functional</span> <span style="color:#a6e22e">config</span> <span style="color:#a6e22e">options</span>:
 
-<pre><code class="language-go">Pass dependencies to a service implementation as functional config options:
+     <span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">defaultConfig</span> <span style="color:#a6e22e">Config</span>, <span style="color:#a6e22e">configOptions</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">Config</span>))<span style="color:#a6e22e">Service</span>.
 
-     New(defaultConfig Config, configOptions ...func(*Config))Service.
+<span style="color:#a6e22e">where</span> <span style="color:#a6e22e">Service</span> <span style="color:#a6e22e">is</span> <span style="color:#a6e22e">an</span> <span style="color:#66d9ef">interface</span>.
+</code></pre></div><p>Dependency Injection in other languages consider more factors specific to the ecosystem. It&rsquo;s important to evaluate which of the patterns emanating from those factors are applicable in Go. Hopefully I have presented a strong case for a sensible dependency injection pattern in Go.</p>
 
-where Service is an interface.
-</code></pre>
+  </div>
 
-<p>Dependency Injection in other languages consider more factors specific to the ecosystem. It&rsquo;s important to evaluate which of the patterns emanating from those factors are applicable in Go. Hopefully I have presented a strong case for a sensible dependency injection pattern in Go.</p>
-
-
-  </article>
-
-<footer class="site-footer">
-  <span itemscope itemtype="http://schema.org/Person">
-    <link itemprop="url" href="https://adnaan.badr.in">
-    <span itemprop="name">Adnaan Badr</span>
-
-    <br>
-
-    <a itemprop="sameAs" href="https://github.com/adnaan" title="GitHub">Github</a>
-
-    <a itemprop="sameAs" href="https://twitter.com/adnaanx" title="Twitter">Twitter</a>
-
-
-    <a itemprop="sameAs" href="https://www.linkedin.com/in/adnaanx"
-      title="LinkedIn">LinkedIn</a>
-
+  <footer>
+    <hr class="end-line">
 
     
-  </span>
 
-  
-</footer>
+    
+
+    
+    
+  </footer>
+
+  <div class="comments">
+
+
+
 </div>
 
-<script src="/js/highlight.pack.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+</article>
+
 
 </body>
+<div class="foot">
+  
+  
+
+  
+</div>
+
+
 
 </html>

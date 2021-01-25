@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.79.0" />
+
+  <title> Go Modest |  Time Traveling Gopher</title>
+  <meta name="description" content="Time Traveling Gopher">
+  <link rel="stylesheet" href="https://adnaan.badr.in/css/simpleness.css">
+  <link rel="canonical" href="https://adnaan.badr.in/blog/2020/12/24/go-modest/">
+  <link rel="alternate" type="application/rss+xml" href="" title="Time Traveling Gopher">
+  
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header class="menus">
+  
+  <a href="https://adnaan.badr.in/">Time Traveling Gopher</a>
+  
+
+  <nav >
+    
+  </nav>
+
+  <nav class="fontawesome">
+    
+    <a href="https://github.com/adnaan" target="_blank">
+        <i title="GitHub" class="fab fa-github"></i>
+    </a>
+    
+    
+    <a href="https://twitter.com/adnaanx" target="_blank">
+        <i title="Twitter" class="fab fa-twitter"></i>
+    </a>
+    
+    
+  </nav>
+  
+  
+  <div class="hidden description">Time Traveling Gopher</div>
+  
+</header>
+
+<article class="article">
+  <header>
+    <h1 style="text-align: center;" >Go Modest</h1>
+
+    <div class="post-meta">
+    
+      <time datetime="2020-12-24T15:52:31&#43;01:00">December 24, 2020</time> &nbsp; 
+    
+
+     &nbsp;
+
+    
+    
+    
+
+    
+
+    
+    </div>
+  </header>
+
+   
+
+  <div class="text">
+    <p>Github: <a href="https://github.com/adnaan/gomodest">https://github.com/adnaan/gomodest</a></p>
+<p><strong>GOMODEST</strong> is a Multi Page App(MPA) <strong>starter kit</strong> using Go&rsquo;s <code>html/template</code>, <code>SvelteJS</code> and <code>StimulusJS</code>. It is inspired from modest approaches to building webapps as enlisted in <a href="https://modestjs.works/">https://modestjs.works/</a>. It can be used as a template to spin off simple Go webapps.</p>
+<h2 id="motivation">Motivation</h2>
+<p>I am a devops engineer who dabbles in UI for side projects, internal tools and such. The SPA/ReactJS ecosystem is too costly for me. This is an alternative approach.</p>
+<blockquote>
+<p>The main idea is to use server rendered html with spots of client-side dynamism using SvelteJS &amp; StimulusJS</p>
+</blockquote>
+<p>The webapp is mostly plain old javascript, html, css but with sprinkles of StimulusJS &amp; spots of SvelteJS used for interactivity sans page reloads. StimulusJS is used for sprinkling
+interactivity in server rendered html &amp; mounting Svelte components into divs.</p>
+<h2 id="stack">Stack</h2>
+<p>A few things which were used:</p>
+<ol>
+<li>Go, html/template, goview</li>
+<li>Authentication: <a href="https://github.com/adnaan/users">github.com/adnaan/users</a></li>
+<li>SvelteJS</li>
+<li>StimulusJS</li>
+<li>Bulma CSS</li>
+</ol>
+<p>Many more things in <code>go.mod</code> &amp; <code>web/package.json</code></p>
+<p>To run, clone this repo and:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ make install
+<span style="color:#75715e"># another terminal</span>
+$ make run-go
+</code></pre></td></tr></table>
+</div>
+</div><p>The ideas in this starter kit follow the JS gradient as noted <a href="https://modestjs.works/book/part-2/the-js-gradient/">here</a>. I have taken the liberty to organise them into the following big blocks: <strong>server-rendered html</strong>, <strong>sprinkles</strong> and <strong>spots</strong>.</p>
+<h2 id="server-rendered-html">Server Rendered HTML</h2>
+<p>Use <code>html/template</code> and <code>goview</code> to render html pages. It&rsquo;s quite powerful when do you don&rsquo;t need client-side interactions.</p>
+<p>example:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">accountPage</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) (<span style="color:#a6e22e">goview</span>.<span style="color:#a6e22e">M</span>, <span style="color:#66d9ef">error</span>) {
+
+	<span style="color:#a6e22e">session</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">store</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">r</span>, <span style="color:#e6db74">&#34;auth-session&#34;</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;%v, %w&#34;</span>, <span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">InternalErr</span>)
+	}
+
+	<span style="color:#a6e22e">profileData</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">Values</span>[<span style="color:#e6db74">&#34;profile&#34;</span>]
+	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;%v, %w&#34;</span>, <span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">InternalErr</span>)
+	}
+
+	<span style="color:#a6e22e">profile</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">profileData</span>.(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">interface</span>{})
+	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;%v, %w&#34;</span>, <span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">InternalErr</span>)
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">goview</span>.<span style="color:#a6e22e">M</span>{
+		<span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#a6e22e">profile</span>[<span style="color:#e6db74">&#34;name&#34;</span>],
+	}, <span style="color:#66d9ef">nil</span>
+
+}
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="sprinkles">Sprinkles</h2>
+<p>Use <code>stimulusjs</code> to level up server-rendered html to handle simple interactions like: navigations, form validations etc.</p>
+<p>example:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">    &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;button is-primary is-outlined is-fullwidth&#34;</span>
+            <span style="color:#a6e22e">data-action</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;click-&gt;navigate#goto&#34;</span>
+            <span style="color:#a6e22e">data-goto</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/  &#34;</span>
+            <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;button&#34;</span>&gt;
+        Home
+    &lt;/<span style="color:#f92672">button</span>&gt;
+</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">    <span style="color:#66d9ef">goto</span>(<span style="color:#a6e22e">e</span>){
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">currentTarget</span>.<span style="color:#a6e22e">dataset</span>.<span style="color:#66d9ef">goto</span>){
+            window.<span style="color:#a6e22e">location</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">currentTarget</span>.<span style="color:#a6e22e">dataset</span>.<span style="color:#66d9ef">goto</span>;
+        }
+    }
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="spots">Spots</h2>
+<p>Use <code>sveltejs</code> to take over <code>spots</code> of a server-rendered html page to provide more complex interactivity without page reloads.</p>
+<p>This snippet is the most interesting part of this project:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">{{define &#34;content&#34;}}
+    &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;columns is-mobile is-centered&#34;</span>&gt;
+        &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;column is-half-desktop&#34;</span>&gt;
+            &lt;<span style="color:#f92672">div</span>
+                    <span style="color:#a6e22e">data-target</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;svelte.component&#34;</span>
+                    <span style="color:#a6e22e">data-component-name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;app&#34;</span>
+                    <span style="color:#a6e22e">data-component-props</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{{.Data}}&#34;</span>&gt;
+            &lt;/<span style="color:#f92672">div</span>&gt;
+        &lt;/<span style="color:#f92672">div</span>&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
+    &lt;/<span style="color:#f92672">div</span>&gt;
+{{end}}
+</code></pre></td></tr></table>
+</div>
+</div><p><a href="https://github.com/adnaan/gomodest/blob/main/web/html/app.html">source</a></p>
+<p>In the above snippet, we use StimulusJS to mount a Svelte component by using the following code:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js">     <span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">Controller</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;stimulus&#34;</span>;
+     <span style="color:#66d9ef">import</span> <span style="color:#a6e22e">components</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;./components&#34;</span>;
+     
+     <span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">class</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">Controller</span> {
+         <span style="color:#66d9ef">static</span> <span style="color:#a6e22e">targets</span> <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;component&#34;</span>]
+         <span style="color:#a6e22e">connect</span>() {
+             <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">componentTargets</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>){
+                 <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">componentTargets</span>.<span style="color:#a6e22e">forEach</span>(<span style="color:#a6e22e">el</span> =&gt; {
+                     <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">componentName</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">el</span>.<span style="color:#a6e22e">dataset</span>.<span style="color:#a6e22e">componentName</span>;
+                     <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">componentProps</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">el</span>.<span style="color:#a6e22e">dataset</span>.<span style="color:#a6e22e">componentProps</span> <span style="color:#f92672">?</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">parse</span>(<span style="color:#a6e22e">el</span>.<span style="color:#a6e22e">dataset</span>.<span style="color:#a6e22e">componentProps</span>)<span style="color:#f92672">:</span> {};
+                     <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>(<span style="color:#a6e22e">componentName</span> <span style="color:#66d9ef">in</span> <span style="color:#a6e22e">components</span>)){
+                         <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`svelte component: </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">componentName</span><span style="color:#e6db74">}</span><span style="color:#e6db74">, not found!`</span>)
+                         <span style="color:#66d9ef">return</span>;
+                     }
+                     <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">app</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">components</span>[<span style="color:#a6e22e">componentName</span>]({
+                         <span style="color:#a6e22e">target</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">el</span>,
+                         <span style="color:#a6e22e">props</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">componentProps</span>
+                     });
+                 })
+             }
+         }
+     }
+</code></pre></td></tr></table>
+</div>
+</div><p><a href="https://github.com/adnaan/gomodest/blob/main/web/src/controllers/svelte_controller.js">source</a></p>
+<p>This strategy allows us to mix server rendered HTML pages with client side dynamism.</p>
+<p>Other possibly interesting aspects could be the layout of <a href="https://github.com/adnaan/gomodest/tree/main/web/html">web/html</a> and the usage of the super nice <a href="https://github.com/foolin/goview">goview</a> library to render html in these files:</p>
+<ol>
+<li><a href="https://github.com/adnaan/gomodest/blob/main/routes/router.go">router.go</a></li>
+<li><a href="https://github.com/adnaan/gomodest/blob/main/routes/view.go">view.go</a></li>
+<li><a href="https://github.com/adnaan/gomodest/blob/main/routes/pages.go">pages.go</a></li>
+</ol>
+<p>That is all.</p>
+<hr>
+<h2 id="attributions">Attributions</h2>
+<ol>
+<li><a href="https://areknawo.com/making-a-todo-app-in-svelte/">https://areknawo.com/making-a-todo-app-in-svelte/</a></li>
+<li><a href="https://modestjs.works/">https://modestjs.works/</a></li>
+<li><a href="https://github.com/foolin/goview">https://github.com/foolin/goview</a></li>
+</ol>
+
+  </div>
+
+  <footer>
+    <hr class="end-line">
+
+    
+
+    
+
+    
+    
+  </footer>
+
+  <div class="comments">
+
+
+
+</div>
+
+</article>
+
+
+</body>
+<div class="foot">
+  
+  
+
+  
+</div>
+
+
+
+</html>

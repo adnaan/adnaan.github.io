@@ -8,12 +8,12 @@
     <language>en-us</language>
     <lastBuildDate>Mon, 25 Jan 2021 14:32:50 +0100</lastBuildDate><atom:link href="https://adnaan.badr.in/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Devops is Dead</title>
-      <link>https://adnaan.badr.in/blog/2021/01/25/devops-is-dead/</link>
+      <title>Rumors of Devops death are greatly exaggerated</title>
+      <link>https://adnaan.badr.in/blog/2021/01/25/rumors-of-devops-death-are-greatly-exaggerated/</link>
       <pubDate>Mon, 25 Jan 2021 14:32:50 +0100</pubDate>
       
-      <guid>https://adnaan.badr.in/blog/2021/01/25/devops-is-dead/</guid>
-      <description>The claim: Devops is Dead, seems to be common knowledge. I have heard this in hushed tones over the last couple of years and it&amp;rsquo;s turning quickly into more than whispers. But what does it mean ?
+      <guid>https://adnaan.badr.in/blog/2021/01/25/rumors-of-devops-death-are-greatly-exaggerated/</guid>
+      <description>&amp;ldquo;Devops is Dead&amp;rdquo;, is a claim I have heard in hushed tones and numerous blog posts over the last couple of years and it&amp;rsquo;s turning quickly into more than whispers. But what does it mean ?
 The term &amp;ldquo;devops&amp;rdquo; itself has a lot of meanings. Devops can refer to a role or a process of releasing software. Here we are talking about the role which used to specialise in operating systems, monitoring and CI/CD tools with a 80:20 division of work.</description>
     </item>
     

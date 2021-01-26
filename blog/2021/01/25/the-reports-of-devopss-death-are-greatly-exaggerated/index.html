@@ -102,7 +102,7 @@
 <li><a href="https://dhall-lang.org/">dhall-lang</a></li>
 <li><a href="https://github.com/google/starlark-go">starlark(python dialect)</a></li>
 </ul>
-<p>However, you cannot configure, what you do not understand. The knowledge of low level concepts will still be required at some level, but the low level complexity will keep moving towards abstractions built by the behemoths(k8s, container runtimes, GCP, AWS, Azure.). I wonder how long before we start talking about infrastructure solely in terms of software objects, and the languages and tools which can help manage them. IMO we are pretty close already.</p>
+<p>However you cannot configure what you do not understand. The knowledge of low level concepts will still be required at some level, but the low level complexity will keep moving towards abstractions built by the behemoths(k8s, container runtimes, GCP, AWS, Azure.). I wonder how long before we start talking about infrastructure solely in terms of software objects, and the languages and tools which can help manage them. IMO we are pretty close already.</p>
 <p>Ok <em>maybe</em> devops as a traditional centralised role is dead or at least on its deathbed. It&rsquo;s transforming into a discipline where cloud-infra focused engineers work with application focused engineers to deliver software quickly and efficiently. These &ldquo;cloud-infra&rdquo; focused engineers practice classical software principles and full fledged languages. With respect to their traits, such engineers are closer to application platform engineers than to a traditional devops engineer.</p>
 <p>On the other hand, devops as a process is alive and kicking while <em>also</em> evolving. The adoption of Site Reliability Engineering even in medium-sized companies is inline with the aforesaid premise of seeing infra problems as software problems. Since SRE is considered to be  a <a href="https://cloud.google.com/blog/products/gcp/sre-vs-devops-competing-standards-or-close-friends">specific implementation</a> of the principles of devops, it is pushing infrastructure engineering closer to application engineering.</p>
 <p>Following are the activities I have seen while practicing a similar role at <a href="taxfix.de">Taxfix</a>:</p>
@@ -111,11 +111,11 @@
 <li>Generate kubernetes manifests using pulumi, jsonnet, jkcfg, AWS CDK or similar tools.</li>
 <li>Generate monitoring configuration for a Cloud Provider or third-parties like grafana, prometheus etc using SDKs.</li>
 <li>Write or generate CI/CD manifests. Include build steps for code quality, security etc.</li>
-<li>Develop gitops tool to distribute permissions and secrets.</li>
-<li>Develop gitops tools to add/remove frequently provisioned resources, e.g. Buckets, Pubsub Queues.</li>
-<li>Develop gitops tool to automate oncall scheduling and paging.</li>
+<li>Develop a gitops tool to distribute permissions and secrets.</li>
+<li>Develop a gitops tools to add/remove frequently provisioned resources, e.g. Buckets, Pubsub Queues.</li>
+<li>Develop a gitops tool to automate oncall scheduling and paging.</li>
 <li>Develop platform tools to standardise platform task, e.g: webhook tunnel, notification schedule, API gateways etc.</li>
-<li>Integrate or develop tools to ensure continous delivery using feature flags.</li>
+<li>Integrate or develop tools to ensure continuous delivery using feature flags.</li>
 <li>Write maintainable, testable code while using established good practices.</li>
 </ul>
 <p>How about a new title for the devops role then ? Just flinging out some respectable-sounding titles here:</p>
@@ -129,7 +129,7 @@
 <li>PlumbOps</li>
 <li>Application Platform Engineer(Infrastructure)</li>
 </ul>
-<p>I am quite comfortable with the title, &ldquo;Devops&rdquo; too, it&rsquo;s got quite a ring to it. Ofcourse what it means is constantly evolving.</p>
+<p>I am quite comfortable with the title, &ldquo;Devops&rdquo; too, it&rsquo;s got a nice ring to it. Of course what it means is constantly evolving.</p>
 
   </div>
 

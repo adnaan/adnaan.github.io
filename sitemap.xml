@@ -3,17 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://adnaan.badr.in/blog/</loc>
-    <lastmod>2021-01-25T14:32:50+01:00</lastmod>
+    <loc>https://adnaan.badr.in/blog/2021/02/11/a-github-template-to-build-dynamic-webapps-in-html-bulma-css-and-go./</loc>
+    <lastmod>2021-02-11T20:52:45+01:00</lastmod>
   </url>
   
   <url>
-    <loc>https://adnaan.badr.in/blog/2021/01/25/the-reports-of-devopss-death-are-greatly-exaggerated/</loc>
-    <lastmod>2021-01-25T14:32:50+01:00</lastmod>
+    <loc>https://adnaan.badr.in/blog/</loc>
+    <lastmod>2021-02-11T20:52:45+01:00</lastmod>
   </url>
   
   <url>
     <loc>https://adnaan.badr.in/</loc>
+    <lastmod>2021-02-11T20:52:45+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://adnaan.badr.in/blog/2021/01/25/the-reports-of-devopss-death-are-greatly-exaggerated/</loc>
     <lastmod>2021-01-25T14:32:50+01:00</lastmod>
   </url>
   

@@ -1,0 +1,69 @@
+---
+title: "Go Pattern: Request Scoped HTTP Handlers"
+date: 2021-02-19T08:03:18+01:00
+draft: false
+---
+
+A tiny yet powerful abstraction which I don't see enough is to create HTTP handler wrappers which contains everything it needs: 
+
+- A Request struct
+- A Response struct
+- HTTP Handler function
+- Dependencies struct(e.g access to database)
+
+This is how they look like:
+
+```go
+func Create(ctx TasksContext) http.HandlerFunc {
+	var req struct {
+		Title string `json:"title"`
+	}
+    var resp struct {
+        StatusCode int `json:"code"`
+        Reason string `json:"reason"`
+    }
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		// parse request body into req
+        // ctx.db.Create task
+        // write response back
+	}
+}
+
+...
+// mount the handler on the router
+r.Post("/", Create(tasksContext))
+
+```
+
+This is nice because it makes the code highly readable in a single glance, especially if you have tens or hundreds of such handlers. It looks cleaner too since we don't have a method receiver for every handler.
+Since we can't have a pointer receiver in this pattern, we won't be accidentally modifying anything. All state is request-scoped.
+
+Adding a new dependency is only a matter of modifying the context struct.It doesn't adversly affect code reusability either as we can embed common structs in `req` or `resp` structs:
+
+```go
+
+type baseResponse struct {
+    StatusCode int `json:"code"`
+    Reason string `json:"reason"`
+}
+
+func Create(ctx TasksContext) http.HandlerFunc {
+	var req struct {
+		Title string `json:"title"`
+	}
+    var resp struct {
+        TaskID string `json:"task_id"`
+        baseResponse
+    }
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		// parse request body into req
+        // ctx.db.Create task
+        // write response back
+	}
+}
+```
+
+Also,  better copiability :)
+

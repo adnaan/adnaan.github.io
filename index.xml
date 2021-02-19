@@ -6,7 +6,18 @@
     <description>Recent content on Time Traveling Gopher</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 11 Feb 2021 20:52:45 +0100</lastBuildDate><atom:link href="https://adnaan.badr.in/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 19 Feb 2021 08:03:18 +0100</lastBuildDate><atom:link href="https://adnaan.badr.in/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Go Pattern: Request Scoped HTTP Handlers</title>
+      <link>https://adnaan.badr.in/blog/2021/02/19/go-pattern-request-scoped-http-handlers/</link>
+      <pubDate>Fri, 19 Feb 2021 08:03:18 +0100</pubDate>
+      
+      <guid>https://adnaan.badr.in/blog/2021/02/19/go-pattern-request-scoped-http-handlers/</guid>
+      <description>A tiny yet powerful abstraction which I don&amp;rsquo;t see enough is to create HTTP handler wrappers which contains everything it needs:
+ A Request struct A Response struct HTTP Handler function Dependencies struct(e.g access to database)  This is how they look like:
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20  func Create(ctx TasksContext) http.HandlerFunc { var req struct { Title string `json:&amp;#34;title&amp;#34;` } var resp struct { StatusCode int `json:&amp;#34;code&amp;#34;` Reason string `json:&amp;#34;reason&amp;#34;` } return func(w http.</description>
+    </item>
+    
     <item>
       <title>A github template to build dynamic webapps in HTML, Bulma CSS and Go.</title>
       <link>https://adnaan.badr.in/blog/2021/02/11/a-github-template-to-build-dynamic-webapps-in-html-bulma-css-and-go./</link>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.79.0" />
+
+  <title> Go Pattern: Request Scoped HTTP Handlers |  Time Traveling Gopher</title>
+  <meta name="description" content="Time Traveling Gopher">
+  <link rel="stylesheet" href="https://adnaan.badr.in/css/simpleness.css">
+  <link rel="canonical" href="https://adnaan.badr.in/blog/2021/02/19/go-pattern-request-scoped-http-handlers/">
+  <link rel="alternate" type="application/rss+xml" href="" title="Time Traveling Gopher">
+  
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header class="menus">
+  
+  <a href="https://adnaan.badr.in/">Time Traveling Gopher</a>
+  
+
+  <nav >
+    
+  </nav>
+
+  <nav class="fontawesome">
+    
+    <a href="https://github.com/adnaan" target="_blank">
+        <i title="GitHub" class="fab fa-github"></i>
+    </a>
+    
+    
+    <a href="https://twitter.com/adnaanx" target="_blank">
+        <i title="Twitter" class="fab fa-twitter"></i>
+    </a>
+    
+    
+  </nav>
+  
+  
+  <div class="hidden description">Time Traveling Gopher</div>
+  
+</header>
+
+<article class="article">
+  <header>
+    <h1 style="text-align: center;" >Go Pattern: Request Scoped HTTP Handlers</h1>
+
+    <div class="post-meta">
+    
+      <time datetime="2021-02-19T08:03:18&#43;01:00">February 19, 2021</time> &nbsp; 
+    
+
+     &nbsp;
+
+    
+    
+    
+
+    
+
+    
+    </div>
+  </header>
+
+   
+
+  <div class="text">
+    <p>A tiny yet powerful abstraction which I don&rsquo;t see enough is to create HTTP handler wrappers which contains everything it needs:</p>
+<ul>
+<li>A Request struct</li>
+<li>A Response struct</li>
+<li>HTTP Handler function</li>
+<li>Dependencies struct(e.g access to database)</li>
+</ul>
+<p>This is how they look like:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Create</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">TasksContext</span>) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">req</span> <span style="color:#66d9ef">struct</span> {
+		<span style="color:#a6e22e">Title</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;title&#34;`</span>
+	}
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">resp</span> <span style="color:#66d9ef">struct</span> {
+        <span style="color:#a6e22e">StatusCode</span> <span style="color:#66d9ef">int</span> <span style="color:#e6db74">`json:&#34;code&#34;`</span>
+        <span style="color:#a6e22e">Reason</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;reason&#34;`</span>
+    }
+
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+		<span style="color:#75715e">// parse request body into req
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// ctx.db.Create task
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// write response back
+</span><span style="color:#75715e"></span>	}
+}
+
+<span style="color:#f92672">...</span>
+<span style="color:#75715e">// mount the handler on the router
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Post</span>(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#a6e22e">Create</span>(<span style="color:#a6e22e">tasksContext</span>))
+
+</code></pre></td></tr></table>
+</div>
+</div><p>This is nice because it makes the code highly readable in a single glance, especially if you have tens or hundreds of such handlers. It looks cleaner too since we don&rsquo;t have a method receiver for every handler.
+Since we can&rsquo;t have a pointer receiver in this pattern, we won&rsquo;t be accidentally modifying anything. All state is request-scoped.</p>
+<p>Adding a new dependency is only a matter of modifying the context struct.It doesn&rsquo;t adversly affect code reusability either as we can embed common structs in <code>req</code> or <code>resp</code> structs:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">baseResponse</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">StatusCode</span> <span style="color:#66d9ef">int</span> <span style="color:#e6db74">`json:&#34;code&#34;`</span>
+    <span style="color:#a6e22e">Reason</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;reason&#34;`</span>
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Create</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">TasksContext</span>) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">req</span> <span style="color:#66d9ef">struct</span> {
+		<span style="color:#a6e22e">Title</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;title&#34;`</span>
+	}
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">resp</span> <span style="color:#66d9ef">struct</span> {
+        <span style="color:#a6e22e">TaskID</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;task_id&#34;`</span>
+        <span style="color:#a6e22e">baseResponse</span>
+    }
+
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+		<span style="color:#75715e">// parse request body into req
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// ctx.db.Create task
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// write response back
+</span><span style="color:#75715e"></span>	}
+}
+</code></pre></td></tr></table>
+</div>
+</div><p>Also,  better copiability :)</p>
+
+  </div>
+
+  <footer>
+    <hr class="end-line">
+
+    
+
+    
+
+    
+    
+  </footer>
+
+  <div class="comments">
+
+
+
+</div>
+
+</article>
+
+
+</body>
+<div class="foot">
+  
+  
+
+  
+</div>
+
+
+
+</html>

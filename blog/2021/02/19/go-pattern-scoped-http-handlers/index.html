@@ -101,10 +101,10 @@
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 <pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Create</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">TasksContext</span>) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">req</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">req</span> <span style="color:#66d9ef">struct</span> {
 		<span style="color:#a6e22e">Title</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;title&#34;`</span>
 	}
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">resp</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">resp</span> <span style="color:#66d9ef">struct</span> {
         <span style="color:#a6e22e">StatusCode</span> <span style="color:#66d9ef">int</span> <span style="color:#e6db74">`json:&#34;code&#34;`</span>
         <span style="color:#a6e22e">Reason</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;reason&#34;`</span>
     }
@@ -157,10 +157,10 @@ Since we can&rsquo;t have a pointer receiver in this pattern, we won&rsquo;t be 
 }
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Create</span>(<span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">TasksContext</span>) <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandlerFunc</span> {
-	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">req</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">req</span> <span style="color:#66d9ef">struct</span> {
 		<span style="color:#a6e22e">Title</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;title&#34;`</span>
 	}
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">resp</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">resp</span> <span style="color:#66d9ef">struct</span> {
         <span style="color:#a6e22e">TaskID</span> <span style="color:#66d9ef">string</span> <span style="color:#e6db74">`json:&#34;task_id&#34;`</span>
         <span style="color:#a6e22e">baseResponse</span>
     }

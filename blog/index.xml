@@ -15,7 +15,7 @@
       <guid>https://adnaan.badr.in/blog/2021/02/19/go-pattern-scoped-http-handlers/</guid>
       <description>A tiny yet powerful abstraction which I don&amp;rsquo;t see enough is to create HTTP handler wrappers which contains everything it needs:
  A Request struct A Response struct HTTP Handler function Dependencies struct(e.g access to database)  This is how they look like:
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20  func Create(ctx TasksContext) http.HandlerFunc { var req struct { Title string `json:&amp;#34;title&amp;#34;` } var resp struct { StatusCode int `json:&amp;#34;code&amp;#34;` Reason string `json:&amp;#34;reason&amp;#34;` } return func(w http.</description>
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20  func Create(ctx TasksContext) http.HandlerFunc { type req struct { Title string `json:&amp;#34;title&amp;#34;` } type resp struct { StatusCode int `json:&amp;#34;code&amp;#34;` Reason string `json:&amp;#34;reason&amp;#34;` } return func(w http.</description>
     </item>
     
     <item>

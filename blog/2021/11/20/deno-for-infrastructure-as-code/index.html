@@ -233,7 +233,11 @@ variables. It provides the following permissions to allow access:</p>
 ...
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="offline-modules">Offline modules</h2>
+</div><p>More on permissions
+<a href="https://deno.land/manual/getting_started/permissions">here.</a>. It also has a
+<a href="https://deno.land/manual@v1.16.2/runtime/permission_apis"><code>permissions</code></a> module
+to do granular runtime permission checks</p>
+<h2 id="offline-modules">Offline modules</h2>
 <p>But doesn&rsquo;t the <code>import</code> fetch the <code>handlebarjs</code> module over the network ?
 Importing modules over the network in production might cause a number of
 problems:</p>
@@ -372,6 +376,14 @@ activity too: <a href="https://aws.amazon.com/cdk/">aws cdk</a>,
 <a href="https://pulumi.com/">pulumi</a> to name a few. Deno has an advantage over them in
 terms of a secure &amp; performant runtime apart from the common offering of a
 <code>typed</code> and <code>familiar</code> language.</p>
+<h1 id="dxcfg-a-configuration-as-code-libary-for-deno">dxcfg: A configuration as code libary for Deno</h1>
+<p>The <a href="https://github.com/dxcfg/dxcfg">dxcfg</a> project is my attempt to use Deno in
+production infrastructure. It' an opinionated port of
+<a href="https://jkcfg.github.io/#/">jkcfg</a> which has similar goals. In my current
+workplace, we use <code>jkcfg</code> to build a base typescript library which is used by
+developers to deploy applications in a standardised way. I have taken learnings
+from this experience and enhanced it with the power of Deno to try and build a
+type-safe, familiar and safe infrastructure toolkit.</p>
 <h1 id="takeaway">Takeaway</h1>
 <p>Personally I am betting on Deno(and typescript) to be one of the key tools in an
 infrastructure operator&rsquo;s toolkit. What I like about it:</p>
@@ -382,13 +394,6 @@ infrastructure operator&rsquo;s toolkit. What I like about it:</p>
 <li>For operators it can be used as a backend for enforcing schema validation,
 security policies, resource usage policies and hermeticity</li>
 </ul>
-<p>The <a href="https://github.com/dxcfg/dxcfg">dxcfg</a> project is my attempt to use Deno in
-production infrastructure. It' an opinionated port of
-<a href="https://jkcfg.github.io/#/">jkcfg</a> which has similar goals. In my current
-workplace, we use <code>jkcfg</code> to build a base typescript library which is used by
-developers to deploy applications in a standardised way. I have taken learnings
-from this experience and enhanced it with the power of Deno to try and build a
-type-safe, familiar and safe infrastructure toolkit.</p>
 
   </div>
 

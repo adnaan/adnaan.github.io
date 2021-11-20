@@ -14,7 +14,7 @@
       
       <guid>https://adnaan.badr.in/blog/2021/11/20/deno-for-infrastructure-as-code/</guid>
       <description>Why Deno is a v8 runtime built in Rust which makes it easy to write performant and secure javascript/typescript apps. It has great developer tooling with a single cli(deno) containing the:
- runtime, code fromatter linter dependency inspector package and build manager repl script evaluator script installer documentation generator and a language server  So you all you need to start a simple one file project with Deno, is the deno cli.</description>
+ runtime, code fromatter linter dependency inspector package and build manager repl script evaluator script installer documentation generator and a language server  So all you need to start a simple one file project with Deno, is the deno cli.</description>
     </item>
     
     <item>

@@ -1,98 +1,60 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
   <url>
     <loc>https://adnaan.badr.in/blog/</loc>
-    <lastmod>2021-02-19T08:03:18+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://adnaan.badr.in/blog/2021/02/19/go-pattern-scoped-http-handlers/</loc>
-    <lastmod>2021-02-19T08:03:18+01:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-11-20T12:19:51+05:30</lastmod>
+  </url><url>
+    <loc>https://adnaan.badr.in/blog/2021/11/20/deno-for-infrastructure-as-code/</loc>
+    <lastmod>2021-11-20T12:19:51+05:30</lastmod>
+  </url><url>
     <loc>https://adnaan.badr.in/</loc>
-    <lastmod>2021-02-19T08:03:18+01:00</lastmod>
-  </url>
-  
-  <url>
+    <lastmod>2021-11-20T12:19:51+05:30</lastmod>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2021/02/11/a-github-template-to-build-dynamic-webapps-in-html-bulma-css-and-go./</loc>
     <lastmod>2021-02-11T20:52:45+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2021/01/25/the-reports-of-devopss-death-are-greatly-exaggerated/</loc>
     <lastmod>2021-01-25T14:32:50+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2020/12/24/go-modest/</loc>
     <lastmod>2020-12-24T15:52:31+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2020/03/13/go-trick-vendoring-non-package-directory/</loc>
     <lastmod>2020-03-13T11:45:12+01:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2019/10/26/devops-tooling-over-processes/</loc>
     <lastmod>2019-10-26T09:37:33+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2019/10/25/go-pattern-is-zero-value-a-change/</loc>
     <lastmod>2019-10-25T13:18:27+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2019/10/25/ops-my-k8s-cli-toolset/</loc>
     <lastmod>2019-10-25T07:31:21+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2019/10/23/go-pattern-test-rig-func/</loc>
     <lastmod>2019-10-23T16:33:01+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2019/10/22/nifty-go-pkg-ory/dockertest/</loc>
     <lastmod>2019-10-22T08:31:33+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2019/10/21/go-pattern-supervise-multiple-servers/</loc>
     <lastmod>2019-10-21T09:59:25+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2019/10/20/what-is-devops/</loc>
     <lastmod>2019-10-20T18:16:30+02:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2019/01/10/how-to-mock-in-go/</loc>
     <lastmod>2019-01-10T20:06:52+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2017/07/20/a-statsd-http-handler-wrapper/</loc>
     <lastmod>2017-07-20T16:46:28+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/blog/2017/07/15/exploring-dependency-injection-in-go/</loc>
     <lastmod>2017-07-15T03:42:44+00:00</lastmod>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/categories/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://adnaan.badr.in/tags/</loc>
   </url>
-  
 </urlset>

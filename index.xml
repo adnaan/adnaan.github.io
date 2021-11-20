@@ -6,16 +6,15 @@
     <description>Recent content on Time Traveling Gopher</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 19 Feb 2021 08:03:18 +0100</lastBuildDate><atom:link href="https://adnaan.badr.in/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 20 Nov 2021 12:19:51 +0530</lastBuildDate><atom:link href="https://adnaan.badr.in/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Go Pattern: Scoped HTTP Handlers</title>
-      <link>https://adnaan.badr.in/blog/2021/02/19/go-pattern-scoped-http-handlers/</link>
-      <pubDate>Fri, 19 Feb 2021 08:03:18 +0100</pubDate>
+      <title>Deno for Infrastructure as Code</title>
+      <link>https://adnaan.badr.in/blog/2021/11/20/deno-for-infrastructure-as-code/</link>
+      <pubDate>Sat, 20 Nov 2021 12:19:51 +0530</pubDate>
       
-      <guid>https://adnaan.badr.in/blog/2021/02/19/go-pattern-scoped-http-handlers/</guid>
-      <description>A tiny yet powerful abstraction which I don&amp;rsquo;t see enough is to create HTTP handler wrappers which contains everything it needs:
- A Request struct A Response struct HTTP Handler function Dependencies struct(e.g access to database)  This is how they look like:
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20  func Create(ctx TasksContext) http.HandlerFunc { type req struct { Title string `json:&amp;#34;title&amp;#34;` } type resp struct { StatusCode int `json:&amp;#34;code&amp;#34;` Reason string `json:&amp;#34;reason&amp;#34;` } return func(w http.</description>
+      <guid>https://adnaan.badr.in/blog/2021/11/20/deno-for-infrastructure-as-code/</guid>
+      <description>Why Deno is a v8 runtime built in Rust which makes it easy to write performant and secure javascript/typescript apps. It has great developer tooling with a single cli(deno) containing the:
+ runtime, code fromatter linter dependency inspector package and build manager repl script evaluator script installer documentation generator and a language server  So you all you need to start a simple one file project with Deno, is the deno cli.</description>
     </item>
     
     <item>

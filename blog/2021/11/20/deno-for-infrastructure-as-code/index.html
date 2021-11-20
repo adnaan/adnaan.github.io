@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.88.1" />
+
+  <title> Deno for Infrastructure as Code |  Time Traveling Gopher</title>
+  <meta name="description" content="Time Traveling Gopher">
+  <link rel="stylesheet" href="https://adnaan.badr.in/css/simpleness.css">
+  <link rel="canonical" href="https://adnaan.badr.in/blog/2021/11/20/deno-for-infrastructure-as-code/">
+  <link rel="alternate" type="application/rss+xml" href="" title="Time Traveling Gopher">
+  
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header class="menus">
+  
+  <a href="https://adnaan.badr.in/">Time Traveling Gopher</a>
+  
+
+  <nav >
+    
+  </nav>
+
+  <nav class="fontawesome">
+    
+    <a href="https://github.com/adnaan" target="_blank">
+        <i title="GitHub" class="fab fa-github"></i>
+    </a>
+    
+    
+  </nav>
+  
+  
+  <div class="hidden description">Time Traveling Gopher</div>
+  
+</header>
+
+<article class="article">
+  <header>
+    <h1 style="text-align: center;" >Deno for Infrastructure as Code</h1>
+
+    <div class="post-meta">
+    
+      <time datetime="2021-11-20T12:19:51&#43;05:30">November 20, 2021</time> &nbsp; 
+    
+
+     &nbsp;
+
+    
+    
+    
+
+    
+
+    
+    </div>
+  </header>
+
+   
+
+  <div class="text">
+    <h1 id="why">Why</h1>
+<p>Deno is a v8 runtime built in Rust which makes it easy to write performant and
+secure javascript/typescript apps. It has great developer tooling with a single
+cli(<code>deno</code>) containing the:</p>
+<ul>
+<li>runtime,</li>
+<li>code fromatter</li>
+<li>linter</li>
+<li>dependency inspector</li>
+<li>package and build manager</li>
+<li>repl</li>
+<li>script evaluator</li>
+<li>script installer</li>
+<li>documentation generator</li>
+<li>and a language server</li>
+</ul>
+<p>So you all you need to start a simple one file project with Deno, is the <code>deno</code>
+cli. But the real power is that even for infinitely complex projects, that&rsquo;s all
+you would ever need ! The <code>deno</code> cli is also embued with <code>sane defaults</code> so for
+the most part one doesn&rsquo;t another configuration file to manage the
+aforementioned tooling.</p>
+<p>Incidentally, these properties are also a good match for using Deno to write
+infrastructure code. It allows you to write secure, reproducible scripts with a
+developer friendly interface in a succint way. Lets walkthrough a simple example
+to see these aspects:</p>
+<p>Here we have a <a href="https://handlebarsjs.com/">handlebarsjs</a> Dockerfile template
+where we want to replace the <code>port</code> variable.</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">FROM alpine:3.8
+EXPOSE {{port}}
+COPY app /
+ENTRYPOINT /app
+</code></pre></td></tr></table>
+</div>
+</div><p><code>main.js</code></p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">HandlebarsJS</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;https://dev.jspm.io/handlebars@4.7.6&#34;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">compile</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">HandlebarsJS</span>).<span style="color:#a6e22e">compile</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">template</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">compile</span>(<span style="color:#a6e22e">Deno</span>.<span style="color:#a6e22e">readTextFileSync</span>(<span style="color:#e6db74">&#34;./Dockerfile.template&#34;</span>));
+<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">template</span>({ <span style="color:#a6e22e">port</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">80</span> }));
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="secure-by-default">Secure by default</h2>
+<p>Lets run the above script with the <code>deno</code> cli</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ deno run main.js
+
+error: Uncaught PermissionDenied: Requires read access to <span style="color:#e6db74">&#34;./Dockerfile.template&#34;</span>, run again with the --allow-read flag
+const template <span style="color:#f92672">=</span> compile<span style="color:#f92672">(</span>Deno.readTextFileSync<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;./Dockerfile.template&#34;</span><span style="color:#f92672">))</span>
+...
+</code></pre></td></tr></table>
+</div>
+</div><p><code>deno</code> refuses to execute the program since it doesn&rsquo;t have permissions to read
+the <code>Dockefile.template</code> file.</p>
+<p>Running it again with <code>--allow-read</code> permission fixes this problem.</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ deno run --allow-read main.js
+FROM alpine:3.8
+EXPOSE <span style="color:#ae81ff">80</span>
+COPY app /
+ENTRYPOINT /app
+</code></pre></td></tr></table>
+</div>
+</div><p>We can clamp it down further by allowing <code>deno</code> to have read permissions only
+for the <code>Dockerifle.template</code> file</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ deno run --allow-read<span style="color:#f92672">=</span>Dockerfile.template main.js
+FROM alpine:3.8
+EXPOSE <span style="color:#ae81ff">80</span>
+COPY app /
+ENTRYPOINT /app
+</code></pre></td></tr></table>
+</div>
+</div><p><code>allow-read</code> takes a comma separated list of files.</p>
+<p>So <code>deno</code> doesn&rsquo;t have access to anything by default: network, disk, environment
+variables. It provides the following permissions to allow access:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-fallback" data-lang="fallback">$ deno run --help 
+
+...
+        --allow-env=&lt;allow-env&gt;
+            Allow environment access
+
+        --allow-ffi=&lt;allow-ffi&gt;
+            Allow loading dynamic libraries
+
+        --allow-hrtime
+            Allow high resolution time measurement
+
+        --allow-net=&lt;allow-net&gt;
+            Allow network access
+
+        --allow-read=&lt;allow-read&gt;
+            Allow file system read access
+
+        --allow-run=&lt;allow-run&gt;
+            Allow running subprocesses
+
+        --allow-write=&lt;allow-write&gt;
+            Allow file system write access
+
+...
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="offline-modules">Offline modules</h2>
+<p>But doesn&rsquo;t the <code>import</code> fetch the <code>handlebarjs</code> module over the network ?
+Importing modules over the network in production might cause a number of
+problems:</p>
+<ul>
+<li>module hosting might fail</li>
+<li>module hosting might have been compromised</li>
+<li>remote module might have changed</li>
+<li>maybe there is no network access available</li>
+</ul>
+<p>Deno solves this problem by providing three features:</p>
+<ul>
+<li>
+<p>Caches a module one time and never reloads them unless explicity asked by
+running <code>deno cache --reload &lt;file|module url</code></p>
+</li>
+<li>
+<p>Provides a way to check subresource integrity for modules using a json <code>lock</code>
+file</p>
+</li>
+<li>
+<p>Provides a <code>--cache-only</code> flag in <code>deno run</code>.</p>
+</li>
+</ul>
+<p>So for the above example, this strategy would look like this:</p>
+<p>Create a lock file and commit it:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">deno cache --lock<span style="color:#f92672">=</span>lock.json --lock-write main.js
+git add -u lock.json
+git commit -m <span style="color:#e6db74">&#34;add lock file&#34;</span>
+git push
+</code></pre></td></tr></table>
+</div>
+</div><p>On another machine, a collaborator can using this lock file to get verified
+modules:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">deno cache --reload --lock<span style="color:#f92672">=</span>lock.json main.js
+deno run --allow-read<span style="color:#f92672">=</span>Dockerfile.template main.js
+</code></pre></td></tr></table>
+</div>
+</div><p>We can take it further by doing a runtime verification too:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">deno run --lock<span style="color:#f92672">=</span>lock.json --cached-only --allow-read<span style="color:#f92672">=</span>Dockerfile.template main.js
+</code></pre></td></tr></table>
+</div>
+</div><p>The above command verifies using the lock file and uses only cached modules with
+no remote fetching. Read more about this
+<a href="https://deno.land/manual/linking_to_external_code/integrity_checking">here.</a></p>
+<h2 id="typescript">Typescript</h2>
+<p>The out of the box typescript support sweetens the deal. If you are an operator
+trying to practice dev-ops(<em>as in equitable participation of operators and
+developers in maintaining infrastructure on a build it, run it basis</em>) and wants
+to provide a familiar and expressive <code>frontend</code> for your infrastructure,
+typescript could be quite important. Especially if the majority of the engineers
+in your org. use typescript most of the time.</p>
+<p>Typescript allows you to write code with type-safety while providing a first
+class autocompletion support in most IDEs/text editors.</p>
+<p>Let&rsquo;s rewrite the above simple example in typescript:</p>
+<p>Define a module, <code>docker_template.ts</code></p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">HandlebarsJS</span> <span style="color:#66d9ef">from</span> <span style="color:#e6db74">&#34;https://dev.jspm.io/handlebars@4.7.6&#34;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">compile</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">HandlebarsJS</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">any</span>).<span style="color:#a6e22e">compile</span>;
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">TemplateParams</span> {
+  <span style="color:#a6e22e">port</span>: <span style="color:#66d9ef">number</span>;
+}
+
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">runDockerTemplate</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">params</span>: <span style="color:#66d9ef">TemplateParams</span>)<span style="color:#f92672">:</span> <span style="color:#66d9ef">string</span> <span style="color:#f92672">=&gt;</span> {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">port</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">port</span> <span style="color:#f92672">||</span> <span style="color:#ae81ff">80</span>;
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">template</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">compile</span>(<span style="color:#a6e22e">Deno</span>.<span style="color:#a6e22e">readTextFileSync</span>(<span style="color:#e6db74">&#34;./Dockerfile.template&#34;</span>));
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">template</span>({ <span style="color:#a6e22e">port</span>: <span style="color:#66d9ef">port</span> });
+};
+</code></pre></td></tr></table>
+</div>
+</div><p>Use the module in <code>main.ts</code></p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">runDockerTemplate</span> } <span style="color:#66d9ef">from</span> <span style="color:#e6db74">&#34;./docker_template.ts&#34;</span>;
+<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">runDockerTemplate</span>({ <span style="color:#a6e22e">port</span>: <span style="color:#66d9ef">8080</span> }));
+</code></pre></td></tr></table>
+</div>
+</div><p>Run it,</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">deno run --lock<span style="color:#f92672">=</span>lock.json --cached-only --allow-read<span style="color:#f92672">=</span>Dockerfile.template main.ts
+</code></pre></td></tr></table>
+</div>
+</div><p>In the typescript implementation we are able to constrain <code>port</code> to a <code>number</code>
+type which also shows up a autocompletion in the editor. Trivial, but enhances
+the developer experience greatly.</p>
+<h2 id="ecosystem-and-future">Ecosystem and future</h2>
+<p>Deno has a great potential to become the a middle ground for developers and
+operators to work together on building and maintaining infrastructure. Providing
+a <code>typed</code> and <code>familiar</code> <code>frontend</code> to infrastrcuture can unlock the next
+generation of developer friendly tooling. This space is seeing some serious
+activity too: <a href="https://aws.amazon.com/cdk/">aws cdk</a>,
+<a href="https://github.com/hashicorp/terraform-cdk">terraform cdk</a>,
+<a href="https://pulumi.com/">pulumi</a> to name a few. Deno has an advantage over them in
+terms of a secure &amp; performant runtime apart from the common offering of a
+<code>typed</code> and <code>familiar</code> language.</p>
+<h1 id="takeaway">Takeaway</h1>
+<p>Personally I am betting on Deno(and typescript) to be one of the key tools in an
+infrastructure operator&rsquo;s toolkit. What I like:</p>
+<ul>
+<li>It&rsquo;s a secure and perfomant sandbox</li>
+<li>One can easily build a ts/js wrapper for an external rust or wasm library.</li>
+<li>For developers it can be used a familiar and expressive frontend.</li>
+<li>For operators it can be used as a backend for enforcing schema validation,
+security policies, resource usage policies and hermeticity</li>
+</ul>
+<p>The <a href="https://github.com/dxcfg/dxcfg">dxcfg</a> project is my attempt to use Deno in
+production infrastructure. It' an opinionated port of
+<a href="https://jkcfg.github.io/#/">jkcfg</a> which has similar goals. In my current
+workplace, we use <code>jkcfg</code> to build a base typescript library which is used by
+developers to deploy applications in a standardised way. I have taken learnings
+from this experience and enhancing it with the power of Deno to try and build a
+type-safe, familiar and safe infrastructure toolkit.</p>
+
+  </div>
+
+  <footer>
+    <hr class="end-line">
+
+    
+
+    
+
+    
+    
+  </footer>
+
+  <div class="comments">
+
+
+
+</div>
+
+</article>
+
+
+</body>
+<div class="foot">
+  
+  
+
+  
+</div>
+
+
+
+</html>

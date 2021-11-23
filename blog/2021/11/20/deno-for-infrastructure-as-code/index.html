@@ -367,6 +367,23 @@ support in most IDEs/text editors.</p>
 type which also shows up a autocompletion in the editor. Trivial, but enhances
 the developer experience greatly.</p>
 <p><img src="/images/autocompletion.png" alt="autocompletion"></p>
+<h2 id="hyper-modularity">Hyper Modularity</h2>
+<p>Writing and publishing small, focused yet <code>versioned</code> modules is a breeze. The
+above <code>docker_template</code> module is probably too small to publish as a npm module
+and probably not worth the investment. In Deno, since you can import any
+exported functions from a versioned file, one can simply do this:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#75715e">// fake example
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">runDockerTemplate</span> } <span style="color:#66d9ef">from</span> <span style="color:#e6db74">&#34;https://raw.githubusercontent.com/myfakeorg/docker_template/v0.0.1/index.ts&#34;</span>;
+</code></pre></td></tr></table>
+</div>
+</div><p>This can be of enourmous value for operators to easily publish small reusable
+modules.</p>
 <h2 id="ecosystem-and-future">Ecosystem and future</h2>
 <p>Deno has a great potential to become the a middle ground for developers and
 operators to work together on building and maintaining infrastructure. Providing
